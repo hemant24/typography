@@ -31,7 +31,7 @@ router.post('/', function(req, res, next) {
 	//Previewer.preview(req.body, 10000, 3)
 	var dir = uuid.v4()
 	frameCreationJob(req.body, dir);
-	res.send({url : dir + '/output.mp4' });
+	res.send({url : dir , filename :  'output.mp4' });
 });
 
 var frameCreationJob = function(payload, dir){

@@ -24,7 +24,7 @@ define(function(require) {
 		var transition = this.transition = new Transition({from : 100 , to : 200})
 		var propertyTransition1 = new PropertyTransition({name : 'top', from : 100, to : 200})
 		this.transition.get("propertyTransitions").add( propertyTransition1)
-		this.init();
+		//this.init();
 	}
 	
 	AudioTrack.prototype.init = function(){
@@ -38,7 +38,8 @@ define(function(require) {
 			minPxPerSec : 100
 		});
 		_bindEvents.call(this)
-		this.wavesurfer.load('assets/demo.mp3');
+		//this.wavesurfer.load('assets/demo.mp3');
+		this.wavesurfer.loadBlob(this.file);
 	}
 	AudioTrack.prototype.addFramesRegion = function(option){
 		option.start = option.start;

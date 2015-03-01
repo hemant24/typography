@@ -7,7 +7,7 @@ define(function(require) {
 		//require('socket.io')
 		require('backbone')
 		require('app/view/TransitionItemView');
-		
+		require('jquery.fileupload');
 		//var io = require('socket.io')
 		
 		//var video = io.connect('http://localhost:3000/video')
@@ -30,22 +30,13 @@ define(function(require) {
 		$("#add").click(function(){
 			
 		})
+
+	
 		/*
 		video.on('welcome', function(msg){
 			console.log('server is welcoming')
 		});*/
-		$("#createVideo").click(function(){
-			console.log('going to send data to server')			
-			$.ajax({
-				url : '/video/',
-				contentType: 'application/json', 
-				data : JSON.stringify({fps: 25 , quality : 3, playLength : 5000, fabricCanvas : Previewer.animatorToJSON(animator, canvas)}),
-				type  : 'post',
-				success : function(data){
-					$("#videoLink").attr('href', 'output/' + data.url)
-				}
-			})
-		})
+		
 		
 		
 		
@@ -108,7 +99,33 @@ define(function(require) {
 			selectable  : false
 		}));
 
-				
+		$('#fileupload').fileupload({
+			dataType: 'json',
+			add : function(e, data){
+				audioTrack.fileDataContext = data;
+				audioTrack.file = data.files[0];
+				audioTrack.init();
+			},
+			done: function (e, data) {
+			}
+		});		
+		
+		$("#createVideo").click(function(){
+			$.ajax({
+				url : '/video/',
+				contentType: 'application/json', 
+				data : JSON.stringify({fps: 25 , quality : 3, playLength : 5000, fabricCanvas : Previewer.animatorToJSON(animator, canvas)}),
+				type  : 'post',
+				success : function(data){
+					$("#videoLink").attr('href', 'output/' + data.url + '/' + data.filename)
+					console.log(audioTrack.fileDataContext)
+					audioTrack.fileDataContext.url = 'upload/uploads/?dir=' + data.url;
+					audioTrack.fileDataContext.submit()
+				}
+			})
+			
+		})
+		
 				
 		//var aText = new fabric.AText("Hemant",new Properties())
 		//animator.add(aText)
