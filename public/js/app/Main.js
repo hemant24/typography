@@ -78,15 +78,6 @@ define(function(require) {
 
 		});
 
-
-		/*
-		myLayout = $('body').layout({
-			// enable showOverflow on west-pane so popups will overlap north pane
-			west__showOverflowOnHover: true
-		//,	west__fxSettings_open: { easing: "easeOutBounce", duration: 750 }
-		});*/
-
-		
 		
 		var canvas = new fabric.Canvas('cc');
 		var animator = new Animator(canvas,'drawing', 3000);
@@ -105,7 +96,7 @@ define(function(require) {
 		//animator.add(aText)
 		aText.addTransitions(transitions)
 		//animator.play()
-		console.log(aText.getKeyframeByTime2(200))
+		//console.log(aText.getKeyframeByTime2(200))
 		
 		canvas.add(new fabric.Line([0, -1000, 0, 1000], {
 			stroke: 'black',

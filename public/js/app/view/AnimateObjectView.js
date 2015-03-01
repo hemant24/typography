@@ -6,9 +6,7 @@ define(function(require) {
 	require('backbone')
 	require('backbone.epoxy')
 	var KeyframeView = require('app/view/keyframeView')
-	
-	var AnimateObjectModel = require('app/model/AnimateObjectModel')
-	
+		
 	
 	AnimateObjectView = Backbone.Epoxy.View.extend({
 		template: _.template(template),
