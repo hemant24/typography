@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Layout with Accordion</title>
+
+	<link rel="stylesheet" type="text/css" href="css/layout-default.css">
+	<link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+
+	
+
+
+<script type="text/javascript" src="js/lib/jquery.js"></script>
+<script type="text/javascript" src="js/lib/jquery.ui.all.js"></script>
+<script type="text/javascript" src="js/lib/jquery.layout.js"></script>
+
+<script type="text/javascript">
+	$(document).ready( function() {
+
+		myLayout = $('body').layout({
+			west__size:			300
+		,	east__size:			300
+			// RESIZE Accordion widget when panes resize
+		,	west__onresize:		$.layout.callbacks.resizePaneAccordions
+		,	east__onresize:		$.layout.callbacks.resizePaneAccordions
+		});
+
+
+
+
+		
+		//setTimeout( myLayout.resizeAll, 1000 ); /* allow time for browser to re-render with new theme */
+
+	});
+	</script>
+</head>
+<body>
+
+<div class="ui-layout-north ui-widget-content" style="display: none;">
+	
+	North Pane
+</div>
+
+<div class="ui-layout-south ui-widget-content ui-state-error" style="display: none;"> South Pane </div>
+
+<div class="ui-layout-center" style="display: none;"> 
+	center pane
+</div>
+
+<div class="ui-layout-west" style="display: none;">
+west
+</div>
+
+<div class="ui-layout-east" style="display: none;">
+	east
+</div>
+
+
+	
+</body>
+</html> 

@@ -1,0 +1,130 @@
+<html>
+<head>
+    
+    <title>Common Code Template</title>
+	<link rel="stylesheet" type="text/css" href="css/layout-default.css">
+	<link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+	<link rel="stylesheet" type="text/css" href="css/jquery-ui.theme.min.css">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+    <style type="text/css">
+	body {
+		font-size : 12px;
+	}
+	/* remove padding and scrolling from elements that contain an Accordion OR a content-div */
+	.ui-layout-center ,	/* has content-div */
+	.ui-layout-west ,	/* has Accordion */
+	.ui-layout-east ,	/* has content-div ... */
+	.ui-layout-east .ui-layout-content { /* content-div has Accordion */
+		padding: 0;
+		overflow: hidden;
+	}
+	.ui-layout-center P.ui-layout-content {
+		line-height:	1.4em;
+		margin:			0; /* remove top/bottom margins from <P> used as content-div */
+	}
+	h3, h4 { /* Headers & Footer in Center & East panes */
+		font-size:		1.1em;
+		background:		#EEF;
+		border:			1px solid #BBB;
+		border-width:	0 0 1px;
+		padding:		7px 10px;
+		margin:			0;
+	}
+	.ui-layout-east h4 { /* Footer in East-pane */
+		font-size:		0.9em;
+		font-weight:	normal;
+		border-width:	1px 0 0;
+	}
+	.ui-layout-west {
+		background-color: #F9F9F9;
+		border:			1px solid #677;
+		border-left:	0;
+		overflow: auto;
+	}
+	</style>
+
+  </head>
+
+<body>
+<div class="ui-layout-north ui-widget-content" style="display: none;">
+	<input type='button' id='add' value='Add'></input>
+	<input type='button' id='preview' value='Preview'></input>
+	<input type='button' id='playPause' value='Play/Pause'></input>
+</div>
+
+<!-- allowOverflow auto-attached by option: west__showOverflowOnHover = true -->
+<div class="ui-layout-west">
+	
+<div id="accordion1">
+
+			<H3><a href="#">Add Lyrics</a></H3>
+			<div>
+				<input type='text' id='seekTime' ></input>
+				<input type='button' id='seekBtn' value="Seek" ></input>
+				<textarea rows="20" cols="20" id="lyrics">
+
+				</textarea>
+				<input type="button" id='generate' value="Generate"></input>
+			</div>
+			
+			<H3><a href="#">Edit Object</a></H3>
+			<div id="editObject">
+				
+			</div>
+			
+
+			
+	</div>
+	
+</div>
+
+<div class="ui-layout-south" >
+
+		<div id="wave-timeline"></div>
+		<div id="wave"></div>
+
+</div>
+
+<div class="ui-layout-east">
+	 	<canvas id="previewCanvas" width="300" height="300" style="border:1px solid #000000;" >
+				</canvas>
+	<div id = "toAppend">
+	</div>
+	<br>
+	<div class="outputSettings">
+		<input type="button" id="createVideo" value="createVideo"/>
+		<br>
+		<p>
+			<a href="#" id="videoLink"> Download </a>
+		</p>
+	</div>
+</div>
+
+<div class="ui-layout-center" style="display: none;">
+	<div id="drawingArea"  style="height : 550; border:1px solid #000000;">
+		<canvas id="cc" >
+		</canvas>
+	</div>
+	<div id="dialog" title="Basic dialog">
+		<div id="editForm">
+		<p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
+		</div>
+	</div>
+			
+</div>
+
+<script data-main="js/app.js" src="js/require.js"></script>
+
+ <script type="text/template" id="nameItem"> 
+  <label>First:</label>
+  <input type="text" class="first-name">
+
+  <label>Last:</label>
+  <input type="text" class="last-name">
+
+  <b>Full Name:</b>
+  <span class="first-name"></span>
+  <span class="last-name"></span>
+</script>
+
+</body>
