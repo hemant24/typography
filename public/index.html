@@ -41,6 +41,9 @@
 		border-left:	0;
 		overflow: auto;
 	}
+	button.deleteRegion {
+		background-color : #FF8A8A !important;
+	}
 	</style>
 
   </head>
@@ -50,7 +53,7 @@
 	<input type='button' id='add' value='Add'></input>
 	<input type='button' id='preview' value='Preview'></input>
 	<input type='button' id='playPause' value='Play/Pause'></input>
-	<input id="fileupload" type="file" name="files[]" data-url="upload/uploads/" multiple>
+	<input id="fileupload" type="file" name="files[]" data-url="upload/uploads/" multiple style="display: inline-block;">
 </div>
 
 <!-- allowOverflow auto-attached by option: west__showOverflowOnHover = true -->
@@ -62,10 +65,8 @@
 			<div>
 				<input type='text' id='seekTime' ></input>
 				<input type='button' id='seekBtn' value="Seek" ></input>
-				<textarea rows="20" cols="20" id="lyrics">
-
-				</textarea>
-				<input type="button" id='generate' value="Generate"></input>
+				<textarea rows="20" cols="20" id="lyrics"></textarea>
+				<input type="button" id='generate' value="Add"></input>
 			</div>
 			
 			<H3><a href="#">Edit Object</a></H3>
@@ -83,6 +84,7 @@
 
 		<div id="wave-timeline"></div>
 		<div id="wave"></div>
+
 
 </div>
 
@@ -110,6 +112,9 @@
 		<div id="editForm">
 		<p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
 		</div>
+	</div>
+	
+	<div id="textSelection" title="Basic dialog">
 	</div>
 			
 </div>

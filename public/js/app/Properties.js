@@ -9,9 +9,9 @@ define(function(require) {
 		}
 		this.top = params.top || 0;
 		this.left = params.left || 0;
-		this.fill = params.fill || "#8A9BE6";
-		this.fontSize  = params.fontSize || 40;
-		this.shadow = params.shadow || "rgba(0,0,0,0.3) 2px 2px 2px";
+		this.fill = params.fill || "#FFFFFF";
+		this.fontSize  = params.fontSize || 80;
+		this.shadow = params.shadow || "rgba(0,0,0,1) 2px 2px 2px";
 		this.fontFamily  =  params.fontFamily || "Times New Roman";
 		this.angle = params.angle ||  0;
 	}

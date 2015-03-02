@@ -7,6 +7,9 @@ define(function(require) {
 	var template = require('text!/template/transition.html')
 	
 	var TransitionItemView = require('./TransitionItemView')
+	var WaveSurfer = require('wavesurfer');
+	require('drawer');
+	require('wavesurfer.transition.region');
 	
 	var TransitionView = Backbone.View.extend({
 		el : "#editForm",
@@ -16,6 +19,25 @@ define(function(require) {
 			this.template = _.template(template);
 			//console.log(this.template())
 			this.$el.html(this.template({model : {}}));
+			 /*
+			this.$el.find('#aObjectTransition').slider({
+				min: 0,
+				max: 100,
+				values: [25, 50, 75],
+				slide: function (evt, ui) {
+					console.log(evt, ui)
+				}
+			});
+			console.log(jQuery._data( this.$el.find('#aObjectTransition').get(0), "events" ))
+			console.log(jQuery._data( this.$el.find('#aObjectTransition').find('.ui-slider-handle')[0], "events"))
+			//this.$el.find('#aObjectTransition').not('.ui-slider-handle').unbind('mousedown')
+			//this.$el.find('.ui-slider-handle').unbind('mousedown')*/
+			/*
+			this.transitionRegions = Object.create(WaveSurfer.TransitionRegions);
+			this.transitionRegions.init(this.$el.find('#aObjectTransition').get(0),[],{
+				height : 15,
+				backgroundColor : 'pink'
+			});*/
 			//this.applyBindings();
 			var appendTo = this.$el
 			//appendTo.find("#accordion2").append(new TransitionItemView({model:this.model.get("transitionList").at(0)}).render().el);

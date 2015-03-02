@@ -42,18 +42,13 @@ define(function(require) {
 		
 
 		myLayout = $('body').layout({
-			west__size:			200
-		,	east__size:			300
+			west__size:			260
+		,	east__size:			320
+		,   south__size : 150
 			// RESIZE Accordion widget when panes resize
 		,	west__onresize:		$.layout.callbacks.resizePaneAccordions
 		,	east__onresize:		$.layout.callbacks.resizePaneAccordions
-		, west: {
-			   side:'left'
-		  ,    cssReq:{    
-				  overflow:"auto"
-				  ,height:"scroll"  
-			   }
-		  }
+
 		});
 
 		// ACCORDION - in the West pane
@@ -71,6 +66,10 @@ define(function(require) {
 
 		
 		var canvas = new fabric.Canvas('cc');
+		canvas.setBackgroundColor('#9199FF');
+		canvas.selectionColor  = 'black';
+		//canvas.selectionBorderColor = 'black';
+		canvas.selectionLineWidth = 5;
 		var animator = new Animator(canvas,'drawing', 3000);
 		var drawingArea = new DrawingArea(canvas, "#drawingArea")
 		var audioTrack = new AudioTrack('to_add', animator)
@@ -103,8 +102,8 @@ define(function(require) {
 			dataType: 'json',
 			add : function(e, data){
 				audioTrack.fileDataContext = data;
-				audioTrack.file = data.files[0];
-				audioTrack.init();
+				//audioTrack.file = data.files[0];
+				//audioTrack.init();
 			},
 			done: function (e, data) {
 			}
@@ -143,10 +142,10 @@ define(function(require) {
 animator.play()*/
 			
 		var camera = new fabric.ACamera({
-		  top: 100,
-		  left : 100,
+		  top: 80,
+		  left : 120,
 		  fill: null,
-		  stroke: "red",
+		  stroke: "black",
 		  strokeWidth: 3,
 		  width: 300,
 		  height: 300,
@@ -187,6 +186,7 @@ animator.play()*/
 		
 		$("#generate").click(function(){
 			var lyrics = $("#lyrics").val();
+			$("#lyrics").val('')
 			lyrics = lyrics.replace(/[ \t\r\n]+/g," ");
 			var wordList = lyrics.split(" ");
 			

@@ -26,7 +26,7 @@ define(function(require) {
 			}
 		})
 		
-		return {background : '' , objects : objectsToSerialize}
+		return {background : canvas.backgroundColor , objects : objectsToSerialize}
 		
 	}
 	
@@ -40,7 +40,7 @@ define(function(require) {
 			fabric.util.populateWithProperties(clonnedInstance.startState, clonnedObject , clonnedInstance.stateProperties)
 			return clonnedObject
 		}, canvas)
-		return {background : '' , objects : initialStateObjects}
+		return {background : canvas.getBackgroundColor() , objects : initialStateObjects}
 	}
 	
 	Previewer['preview'] = function(canvasJSON, playLength, quality){

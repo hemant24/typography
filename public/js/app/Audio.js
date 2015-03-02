@@ -17,17 +17,21 @@ define(function(require) {
 	var TransitionItemView = require('app/view/TransitionItemView');
 	var TransitionView = require('app/view/TransitionView');
 	var AnimateObjectModel = require('./AnimateObjectModel');
+	var AnimationPalete = require('./AnimationPalete');
+	var Properties = require('app/Properties')
 	
 	var AudioTrack = function(file, animator){
+		
 		this.file = file;
 		this.animator = animator;
 		var transition = this.transition = new Transition({from : 100 , to : 200})
 		var propertyTransition1 = new PropertyTransition({name : 'top', from : 100, to : 200})
 		this.transition.get("propertyTransitions").add( propertyTransition1)
-		//this.init();
+		this.init.call(this);
 	}
 	
 	AudioTrack.prototype.init = function(){
+		console.log('init called with ' , this)
 		this.wavesurfer = Object.create(WaveSurfer);
 		this.wavesurfer.init({
 			container: document.querySelector('#wave'),
@@ -35,11 +39,12 @@ define(function(require) {
 			progressColor: 'purple',
 			cursorWidth : 3,
 			scrollParent : true,
-			minPxPerSec : 100
+			minPxPerSec : 100,
+			height : 100
 		});
 		_bindEvents.call(this)
-		//this.wavesurfer.load('assets/demo.mp3');
-		this.wavesurfer.loadBlob(this.file);
+		this.wavesurfer.load('assets/demo.mp3');
+		//this.wavesurfer.loadBlob(this.file);
 	}
 	AudioTrack.prototype.addFramesRegion = function(option){
 		option.start = option.start;
@@ -47,7 +52,97 @@ define(function(require) {
 		this.wavesurfer.addFramesRegion(option)
 	}
 	
+	var _addTextButtonsToDialog = function(appendTo, region){
+		console.log('_addTextButtonsToDialog call with this', this)
+		appendTo.children('.lyricsText').each(function(btn){
+			this.remove();
+		})
+		var noOfWords = 4;
+		var worldsToAdd = 0;
+		var wordList = [];
+		var lyrics = $.trim($("#lyrics").val());
+		lyrics = lyrics.replace(/[ \t\r\n]+/g," ");
+		if($.trim(lyrics).length == 0){
+			wordList = [];
+		}else{
+			wordList = lyrics.split(" ");
+		}
+		if(wordList.length && wordList.length >= noOfWords){
+			worldsToAdd = noOfWords
+		}else if(wordList.length){
+			worldsToAdd = wordList.length
+		}else{
+			worldsToAdd = -1
+		}
+		for(var i=0 ; i < worldsToAdd ; i++){
+				var text = wordList[i]
+				var button = $('<button class="lyricsText">'+ text +'</button>')
+				button.click(function(audioTrack){
+					return function(){
+						_addTextToAnimator.call(audioTrack, this, region)
+					}
+				}(this))
+				appendTo.append(button)
+			}
+	}
+	
+	var _addTextToAnimator = function(button, region){
+		var text = new fabric.AText($(button).text(), new Properties());
+		var start = parseInt(region.start*1000)
+		var end = parseInt(region.end*1000)
+		AnimationPalete.topBottom(text, start, end)
+		this.addFramesRegion({
+					start : start,
+					end : end,
+					color : "red",
+					data : text
+				})
+		this.animator.add(text)
+		
+		var lyrics = $.trim($("#lyrics").val());
+		lyrics = lyrics.replace(/[ \t\r\n]+/g," ");
+		var wordList = lyrics.split(" ");
+		wordList.splice(wordList.indexOf($(button).text()),1)
+		$("#lyrics").val(wordList.join(' ' ))
+		$(button).remove();
+				
+	}
+	
 	var _bindEvents = function(){
+		this.wavesurfer.on('region-dblclick', function(region, e){
+			var dialogOption = {}
+			_addTextButtonsToDialog.call(this, $("#textSelection"), region)
+			$("#textSelection").dialog({
+			buttons: [
+				
+				{
+				  text: "Close",
+				  click: function() {
+					$( this ).dialog( "close" );
+				  }
+				},
+				{
+					text: "Play Region",
+					click: function() {
+						region.play();
+					}
+				},
+				{
+				  text: "Delete the Region",
+				  class: "deleteRegion",
+				  click: function() {
+					$( this ).dialog( "close" );
+					console.log(region);
+					region.remove();
+				  }
+				}
+			  ],
+			  position: { my: "left+19 bottom", at: "left bottom", of: e },
+			  show : true,
+			  width : 450
+			});
+			console.log('region clicked', region, e)
+		}.bind(this))
 		this.wavesurfer.on('frames-region-click', function(region){
 			//console.log('region clicked on ', region)
 			this.animator.canvas.setActiveObject(region.data)
@@ -72,12 +167,15 @@ define(function(require) {
 			var transitionItemView = new TransitionItemView( {model : region.data.get("transitionList")[0]})
 			transitionItemView.render()
 			*/
+			
 			var transitionView = new TransitionView( {model : animatedModel, fabricObject : region.data})
 			transitionView.render()
+			/*var animateObjectView = new AnimateObjectView( {model : animatedModel, fabricObject : region.data})
+			animateObjectView.render()*/
 			
 			$("#dialog").dialog({
 				show : true,
-				 width: 700,
+				width: 700,
 				close : function(){
 					transitionView.remove()
 				}
@@ -128,7 +226,7 @@ define(function(require) {
 		}.bind(this))
 		
 		this.wavesurfer.enableDragSelection({
-			color: randomColor(0.1)
+			color: randomColor(0.5)
 		});
 		this.wavesurfer.backend.on('audioprocess', _progressAnimation.bind(this));
 		

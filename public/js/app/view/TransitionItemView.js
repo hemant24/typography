@@ -11,7 +11,9 @@ define(function(require) {
 	var TransitionItemView = Backbone.Epoxy.View.extend({
 		events: {
             "click .fromShowOnCanvas": "fromShowOnCanvas",
-			"click .fromGetFromCanvas": "fromGetFromCanvas"
+			"click .fromGetFromCanvas": "fromGetFromCanvas",
+			"click .toGetFromCanvas": "toGetFromCanvas",
+			"click .toShowOnCanvas": "toShowOnCanvas"
         },
 		bindings: {
 			"input.startAt": "value:from,events:['keyup']",
@@ -20,16 +22,33 @@ define(function(require) {
 			"span.frameTo": "text:to"
 		 },
 		fromShowOnCanvas : function(){
-			console.log('okay will display')
-			console.log(this.model)
+			this.showOnCanvas("from")
 		},
 		fromGetFromCanvas : function(){
-			var propertyToFetch = []
+			this.getFromCanvas("from")
+			
+		},
+		toShowOnCanvas : function(){
+			this.showOnCanvas("to");
+		},
+		toGetFromCanvas : function(){
+			this.getFromCanvas("to");
+		},
+		showOnCanvas : function(toOrFrom){
+			this.model.get("propertyTransitions").each(function(propertyTransition){
+				this.fabricObject.set(propertyTransition.get('name'), propertyTransition.get(toOrFrom));
+				this.fabricObject.selectable = true;
+				//this.fabricObject.setCoords();
+				this.fabricObject.bringForward();
+				this.fabricObject.canvas.setActiveObject(this.fabricObject)
+				this.fabricObject.canvas.renderAll();
+			}.bind(this))
+		},
+		getFromCanvas : function(toOrFrom){
 			this.model.get("propertyTransitions").each(function(propertyTransition){
 				var currentValue = this.fabricObject.get(propertyTransition.get('name'))
-				propertyTransition.set("from", currentValue)
+				propertyTransition.set(toOrFrom, currentValue)
 			}.bind(this))
-			
 		},
 		initialize : function(params){
 			this.model = params.model;

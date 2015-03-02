@@ -31,9 +31,10 @@ WaveSurfer.Drawer = {
             position: 'relative',
             userSelect: 'none',
             webkitUserSelect: 'none',
-            height: this.params.height + 'px'
+            height: this.params.height + 'px',
+			'background-color' : this.params.backgroundColor
         });
-
+		
         if (this.params.fillParent || this.params.scrollParent) {
             this.style(this.wrapper, {
                 width: '100%',
