@@ -206,9 +206,9 @@ define(function(require) {
 			})*/
 		}.bind(this))
 		
-		this.wavesurfer.on('frames-region-update-end', function(region){
-			console.log('region udpated ' +  region.end)
-			_updateAnimateFrames.call(this, region)
+		this.wavesurfer.on('frames-region-update-end', function(region, direction){
+			console.log('region udpated with direction' +  direction)
+			_updateAnimateFrames.call(this, region, direction)
 		}.bind(this))
 		
 		
@@ -242,7 +242,7 @@ define(function(require) {
 		}.bind(this))
 	}
 	
-	var _updateAnimateFrames = function(region){
+	var _updateAnimateFrames = function(region, direction){
 		//console.log('on region change' , region)
 		var animateObject = region.data;
 		if(animateObject.transitionList && animateObject.transitionList.length){
@@ -262,7 +262,7 @@ define(function(require) {
 			//console.log('newduration', newDuration)
 			if(newDuration != oldDuration){
 				var perChange = parseInt(((newDuration - oldDuration)/oldDuration)*100)  // parseInt(((regionEndAt - lastKeyframeEndAt)/lastKeyframeEndAt)*100)
-				_strechOrSequezeDurationToAllKeyframes.call(this, perChange, animateObject.transitionList, region)
+				_strechOrSequezeDurationToAllKeyframes.call(this, perChange, animateObject.transitionList, region, direction)
 			}
 			if(newDuration == oldDuration && regionStartAt !=  firstKeyframeStartAt){
 				_addDurationToAllKeyframes.call(this, (regionStartAt - firstKeyframeStartAt), animateObject.transitionList);
@@ -270,38 +270,60 @@ define(function(require) {
 		}
 	}
 	
-	var _strechOrSequezeDurationToAllKeyframes = function(perChange, transitionList, region){
+	var _strechOrSequezeDurationToAllKeyframes = function(perChange, transitionList, region, direction){
 		console.log('it was sequeze or strech , percentage chagne ' +region.end)
+		console.log('with direct ' + direction)
 		var startTime = 0
-		for(var i in transitionList){
-			var keyframe = transitionList[i];
-			if(i == 0){
-				//console.log('it is first frame')
-				//console.log('keyframe start time' + keyframe.startAt)
-				//console.log('region start time' + region.start)
-				startTime = region.start
-			}
-			
-			if(i != 0){
-				//console.log('setting startAt value for other than first')
+		var endTime = 0
+		if(direction == 'end'){
+			for(var i in transitionList){
+				var keyframe = transitionList[i];
+				if(i == 0){
+					//console.log('it is first frame')
+					//console.log('keyframe start time' + keyframe.startAt)
+					//console.log('region start time' + region.start)
+					startTime = region.start
+				}
 				
-				var delta = ((parseFloat(keyframe.get('from')) - startTime) * perChange)/100
-				//console.log('change in value ' + delta)
-				//keyframe.set('from', parseInt(parseFloat(keyframe.get('from')) + delta))
+				if(i != 0){
+					//console.log('setting startAt value for other than first')
+					
+					var delta = ((parseFloat(keyframe.get('from')) - startTime) * perChange)/100
+					//console.log('change in value ' + delta)
+					//keyframe.set('from', parseInt(parseFloat(keyframe.get('from')) + delta))
+				}
+				if(i != (transitionList.length - 1)){
+					//console.log('setting endAt value for other last ')
+					var delta2 = (( parseFloat(keyframe.get('to')) - startTime)* perChange )/100
+					//console.log('befor change' + keyframe.endAt)
+					//console.log('change in value ' + delta2)
+					keyframe.set('to', parseInt(parseFloat(keyframe.get('to') + delta2)))
+					//console.log('after change' + keyframe.endAt)
+				}else{
+					//console.log('setting endAt value for last ')
+					console.log('setting value for last keyframe' + region.end)
+					keyframe.set('to', parseInt(region.end))
+				}
+				
 			}
-			if(i != (transitionList.length - 1)){
-				//console.log('setting endAt value for other last ')
-				var delta2 = (( parseFloat(keyframe.get('to')) - startTime)* perChange )/100
-				//console.log('befor change' + keyframe.endAt)
-				//console.log('change in value ' + delta2)
-				keyframe.set('to', parseInt(parseFloat(keyframe.get('to') + delta2)))
-				//console.log('after change' + keyframe.endAt)
-			}else{
-				//console.log('setting endAt value for last ')
-				console.log('setting value for last keyframe' + region.end)
-				keyframe.set('to', parseInt(region.end))
+		}else{
+			console.log('region start with' +region.start)
+			console.log('inside with start' , transitionList.length-1)
+			for(var i = transitionList.length-1; i>=0 ; i=i-1){
+				var keyframe = transitionList[i];
+				if(i==(transitionList.length-1)){
+					
+					endTime = transitionList[transitionList.length - 1].get('to')
+					console.log('endTime is ' , endTime)
+				}
+				if(i == 0){
+					keyframe.set('from', region.start)
+				}else{
+					var delta = (( parseFloat(endTime - keyframe.get('from')))* perChange )/100;
+					keyframe.set('from', parseInt(parseFloat(keyframe.get('from') - delta)))
+				}
+				
 			}
-			
 		}
 	}
 	var _addDurationToAllKeyframes = function(duration, transitionList){
