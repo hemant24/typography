@@ -280,7 +280,7 @@ define(function(require) {
 				
 				var delta = ((parseFloat(keyframe.get('from')) - startTime) * perChange)/100
 				//console.log('change in value ' + delta)
-				keyframe.set('from', parseInt(parseFloat(keyframe.get('from')) + delta))
+				//keyframe.set('from', parseInt(parseFloat(keyframe.get('from')) + delta))
 			}
 			if(i != (transitionList.length - 1)){
 				//console.log('setting endAt value for other last ')
@@ -303,7 +303,9 @@ define(function(require) {
 			var keyframe = transitionList[i]
 			//console.log('befor keyframe startAt ' + keyframe.get('from'))
 			//console.log('befor keyframe endAt ' + keyframe.get('to'))
-			keyframe.set('from', parseFloat(keyframe.get('from')) + duration)
+			if(i == 0){
+				keyframe.set('from', parseFloat(keyframe.get('from')) + duration)
+			}
 			keyframe.set('to',   parseFloat(keyframe.get('to')) + duration)
 			//console.log('after keyframe startAt ' + keyframe.get('from'))
 			//console.log('after keyframe endAt ' + keyframe.get('to'))

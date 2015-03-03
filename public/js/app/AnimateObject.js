@@ -45,6 +45,11 @@ define(function(require) {
 		},
 		addTransition : function(transition, atIndex){
 			console.log('atIndex paramter = ' + atIndex)
+			console.log('newly add cid' + transition['cid'])
+			console.log('b4')
+			for(var idx in this.transitionList){
+				console.log(this.transitionList[idx]['cid'])
+			}
 			var listOfPropertiesCurrentlyHave = [];
 			var adjustFromToTime = false
 			transition.get('propertyTransitions').each(function(propertyTransition){
@@ -82,16 +87,24 @@ define(function(require) {
 			
 			console.log('atIndex = ' + atIndex)
 			this.transitionList.splice(atIndex + 1, 0, transition)
+			console.log('after')
+			for(var idx in this.transitionList){
+				console.log(this.transitionList[idx]['cid'])
+			}
 			if(adjustFromToTime){
 				var newDurationAdded = transition.get('to') - transition.get('from')
 				console.log('new duration added' , newDurationAdded)
+				console.log('setting from to newly one' + transitionToFetchFrom.get('to'))
 				transition.set('from', transitionToFetchFrom.get('to'))
+				console.log('setting to to newly one' + (transitionToFetchFrom.get('from')+ newDurationAdded))
 				transition.set('to', transition.get('from') + newDurationAdded)
 				//now add duration to all remaining frames.
+				/*
 				for(var i = atIndex+2 ; i < this.transitionList.length ; i++){
+					console.log('changing transition of ' + this.transitionList[i]['cid'])
 					this.transitionList[i].set('to', this.transitionList[i].get('to') + newDurationAdded)
 					this.transitionList[i].set('from', this.transitionList[i].get('from') + newDurationAdded)
-				}
+				}*/
 			}
 			
 			
