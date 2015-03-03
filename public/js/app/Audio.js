@@ -49,7 +49,7 @@ define(function(require) {
 	AudioTrack.prototype.addFramesRegion = function(option){
 		option.start = option.start;
 		option.end = option.end ;
-		this.wavesurfer.addFramesRegion(option)
+		return this.wavesurfer.addFramesRegion(option)
 	}
 	
 	var _addTextButtonsToDialog = function(appendTo, region){
@@ -88,16 +88,21 @@ define(function(require) {
 	
 	var _addTextToAnimator = function(button, region){
 		var text = new fabric.AText($(button).text(), new Properties());
+		
 		var start = parseInt(region.start*1000)
 		var end = parseInt(region.end*1000)
 		AnimationPalete.topBottom(text, start, end)
-		this.addFramesRegion({
+		var frameRegion = this.addFramesRegion({
 					start : start,
 					end : end,
 					color : "red",
 					data : text
 				})
 		this.animator.add(text)
+		console.log('animatedObject Model is ' , text.get('animateObjectModel'))
+		console.log('frameRegion', frameRegion)
+		text.get('animateObjectModel').set('region', frameRegion);
+			console.log('animatedObject Model is ' , text.get('animateObjectModel'))
 		console.log('after adding palete', text)
 		var lyrics = $.trim($("#lyrics").val());
 		lyrics = lyrics.replace(/[ \t\r\n]+/g," ");
@@ -156,11 +161,13 @@ define(function(require) {
 			var propertyTransition1 = new PropertyTransition({name : 'top', from : 100, to : 200})
 			transition.get("propertyTransitions").add( propertyTransition1)
 			*/
-			var animatedModel = new AnimateObjectModel({name : region.data.get("text"), fabricObject : region.data , region : region});
+			/*var animatedModel = new AnimateObjectModel({name : region.data.get("text"), fabricObject : region.data , region : region});
 			_.each(region.data.get("transitionList"), function(t){
 				//console.log('adding', t)
 				animatedModel.get("transitionList").add(t)
-			})
+			})*/
+			var animatedModel = region.data.animateObjectModel
+			animatedModel.set('region', region)
 			/*
 			console.log('region data is ' , region.data.get("transitionList"))
 			console.log('TransitionItemView', TransitionItemView)

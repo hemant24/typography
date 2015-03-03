@@ -28,7 +28,7 @@ define(function(require) {
 			var modelIndex = this.model.get("transitionList").indexOf(modelByCid);
 			console.log('modelIndex = ' + modelIndex)
 			var newTransition = new Transition({from : 1000 , to : 2000})
-			this.model.get("transitionList").add(newTransition, {at : modelIndex + 1, silent : true})
+			//this.model.get("transitionList").add(newTransition, {at : modelIndex + 1, silent : true})
 			console.log('befor adding transition is' ,newTransition )
 			this.fabricObject.addTransition(newTransition, modelIndex);
 			console.log('after adding transition is' ,newTransition )

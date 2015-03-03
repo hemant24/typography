@@ -5,6 +5,7 @@ define(function(require) {
 	var fabric = require('./Fabric')
 	var Properties = require('./Properties')
 	var PropertyTransition = require('./NodePropertyTransition')
+	var AnimateObjectModel = require('./NodeAnimateObjectModel')
 	return {
 		initialize: function() {
 			var text="defalt" ,options={}
@@ -18,6 +19,7 @@ define(function(require) {
 			}
 			this.keyframeList = options.keyframeList || [];
 			this.transitionList = options.transitionList || [];
+			this.animateObjectModel = options.animateObjectModel || new AnimateObjectModel({name : text, fabricObject : this , region : {}});
 			this.startState = options.startState || {};
 			this.listOfStartedTransitions = [];
 			this.canvas = null;
@@ -87,6 +89,8 @@ define(function(require) {
 			
 			console.log('atIndex = ' + atIndex)
 			this.transitionList.splice(atIndex + 1, 0, transition)
+			
+			this.animateObjectModel.get("transitionList").add(transition, {at : atIndex + 1, silent : true})
 			console.log('after')
 			for(var idx in this.transitionList){
 				console.log(this.transitionList[idx]['cid'])
@@ -98,6 +102,8 @@ define(function(require) {
 				transition.set('from', transitionToFetchFrom.get('to'))
 				console.log('setting to to newly one' + (transitionToFetchFrom.get('from')+ newDurationAdded))
 				transition.set('to', transition.get('from') + newDurationAdded)
+				var lastTransition = this.animateObjectModel.get("transitionList").at(this.animateObjectModel.get("transitionList").length - 1)
+				lastTransition.set('to', lastTransition.get('to') + newDurationAdded)
 				//now add duration to all remaining frames.
 				/*
 				for(var i = atIndex+2 ; i < this.transitionList.length ; i++){

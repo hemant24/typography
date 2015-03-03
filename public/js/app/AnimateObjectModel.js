@@ -19,8 +19,8 @@ var AnimateObjectModel = Backbone.AssociatedModel.extend({
 		this.on('change', function(){
 			console.log(this)
 			console.log(this.get('fabricObject').set('text',this.get('name')))
-			
-			this.get('fabricObject').canvas.renderAll();
+			if(this.get('fabricObject').canvas)
+				this.get('fabricObject').canvas.renderAll();
 			console.log('Animated Object get changed')
 		})
 		this.on('change:transitionList[*].to', function(t){
