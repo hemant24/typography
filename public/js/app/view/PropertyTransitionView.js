@@ -8,7 +8,8 @@ define(function(require) {
 	var PropertyTransitionView = Backbone.Epoxy.View.extend({
 		 initialize: function() {
 				this.template = _.template(template);
-				this.applyBindings();
+				//console.log(this.model)
+				//this.applyBindings();
 			},
 		  bindings: "data-bind",
 		  render : function(){

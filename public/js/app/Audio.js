@@ -98,7 +98,7 @@ define(function(require) {
 					data : text
 				})
 		this.animator.add(text)
-		
+		console.log('after adding palete', text)
 		var lyrics = $.trim($("#lyrics").val());
 		lyrics = lyrics.replace(/[ \t\r\n]+/g," ");
 		var wordList = lyrics.split(" ");
@@ -156,9 +156,9 @@ define(function(require) {
 			var propertyTransition1 = new PropertyTransition({name : 'top', from : 100, to : 200})
 			transition.get("propertyTransitions").add( propertyTransition1)
 			*/
-			var animatedModel = new AnimateObjectModel({name : "test"});
+			var animatedModel = new AnimateObjectModel({name : region.data.get("text"), fabricObject : region.data , region : region});
 			_.each(region.data.get("transitionList"), function(t){
-				//console.log(t)
+				//console.log('adding', t)
 				animatedModel.get("transitionList").add(t)
 			})
 			/*
@@ -169,7 +169,7 @@ define(function(require) {
 			*/
 			
 			var transitionView = new TransitionView( {model : animatedModel, fabricObject : region.data})
-			transitionView.render()
+			//transitionView.render()
 			/*var animateObjectView = new AnimateObjectView( {model : animatedModel, fabricObject : region.data})
 			animateObjectView.render()*/
 			
@@ -200,7 +200,7 @@ define(function(require) {
 		}.bind(this))
 		
 		this.wavesurfer.on('frames-region-update-end', function(region){
-			//console.log('region udpated ', region)
+			console.log('region udpated ' +  region.end)
 			_updateAnimateFrames.call(this, region)
 		}.bind(this))
 		
@@ -264,7 +264,7 @@ define(function(require) {
 	}
 	
 	var _strechOrSequezeDurationToAllKeyframes = function(perChange, transitionList, region){
-		//console.log('it was sequeze or strech , percentage chagne' , perChange)
+		console.log('it was sequeze or strech , percentage chagne ' +region.end)
 		var startTime = 0
 		for(var i in transitionList){
 			var keyframe = transitionList[i];
@@ -278,21 +278,21 @@ define(function(require) {
 			if(i != 0){
 				//console.log('setting startAt value for other than first')
 				
-				var delta = ((keyframe.get('from') - startTime) * perChange)/100
+				var delta = ((parseFloat(keyframe.get('from')) - startTime) * perChange)/100
 				//console.log('change in value ' + delta)
-				keyframe.set('from', parseInt(keyframe.get('from') + delta))
+				keyframe.set('from', parseInt(parseFloat(keyframe.get('from')) + delta))
 			}
 			if(i != (transitionList.length - 1)){
 				//console.log('setting endAt value for other last ')
-				var delta2 = (( keyframe.get('to') - startTime)* perChange )/100
+				var delta2 = (( parseFloat(keyframe.get('to')) - startTime)* perChange )/100
 				//console.log('befor change' + keyframe.endAt)
 				//console.log('change in value ' + delta2)
-				keyframe.set('to', parseInt(keyframe.get('to') + delta2))
+				keyframe.set('to', parseInt(parseFloat(keyframe.get('to') + delta2)))
 				//console.log('after change' + keyframe.endAt)
 			}else{
 				//console.log('setting endAt value for last ')
-				//console.log('setting value for last keyframe')
-				keyframe.set('to', region.end)
+				console.log('setting value for last keyframe' + region.end)
+				keyframe.set('to', parseInt(region.end))
 			}
 			
 		}
@@ -303,8 +303,8 @@ define(function(require) {
 			var keyframe = transitionList[i]
 			//console.log('befor keyframe startAt ' + keyframe.get('from'))
 			//console.log('befor keyframe endAt ' + keyframe.get('to'))
-			keyframe.set('from', keyframe.get('from') + duration)
-			keyframe.set('to',   keyframe.get('to') + duration)
+			keyframe.set('from', parseFloat(keyframe.get('from')) + duration)
+			keyframe.set('to',   parseFloat(keyframe.get('to')) + duration)
 			//console.log('after keyframe startAt ' + keyframe.get('from'))
 			//console.log('after keyframe endAt ' + keyframe.get('to'))
 		}

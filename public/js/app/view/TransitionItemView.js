@@ -21,6 +21,7 @@ define(function(require) {
 			"span.frameFrom": "text:from",
 			"span.frameTo": "text:to"
 		 },
+		
 		fromShowOnCanvas : function(){
 			this.showOnCanvas("from")
 		},
@@ -52,6 +53,7 @@ define(function(require) {
 		},
 		initialize : function(params){
 			this.model = params.model;
+			//console.log(this.model)
 			this.fabricObject = params.fabricObject;
 			this.template = _.template(template);
 			//console.log(this.template())

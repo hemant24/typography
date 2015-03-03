@@ -5,18 +5,52 @@ if (typeof define !== 'function') {
 define(function(require) {
 	require('backbone.epoxy')
 	var template = require('text!/template/transition.html')
-	
+	var Transition = require('./../Transition');
+	var PropertyTransition = require('./../PropertyTransition');
 	var TransitionItemView = require('./TransitionItemView')
 	var WaveSurfer = require('wavesurfer');
 	require('drawer');
 	require('wavesurfer.transition.region');
 	
-	var TransitionView = Backbone.View.extend({
+	var TransitionView = Backbone.Epoxy.View.extend({
 		el : "#editForm",
+		events: {
+            "click .fromShowOnCanvas": "fromShowOnCanvas",
+			"click .addTransition" : "addTransition"
+        },
+		bindings: {
+			"input.objectName": "value:name,events:['keyup']",
+			"select.frameOptions" : "options:frameDropDown"
+		},
+		addTransition : function(){
+			var cid = this.$el.find('.frameOptions').val();
+			var modelByCid = this.model.get("transitionList").get(cid);
+			var modelIndex = this.model.get("transitionList").indexOf(modelByCid);
+			console.log('modelIndex = ' + modelIndex)
+			var newTransition = new Transition({from : 1000 , to : 2000})
+			console.log('befor adding transition is' ,newTransition )
+			this.fabricObject.addTransition(newTransition, modelIndex);
+			console.log('after adding transition is' ,newTransition )
+					
+			//this.model.get("transitionList").add(new Transition({from : 1000 , to : 2000}) , {at : modelIndex + 1})
+			//console.log('now transitionlist is ' , this.model.get("transitionList"))
+			/*
+			var index = this.collection.indexOf(this.model);
+			var modelAbove = this.collection.at(index-1);*/
+		},
 		initialize : function(params){
 			this.model = params.model
 			this.fabricObject = params.fabricObject
 			this.template = _.template(template);
+			this.region = params.region;
+			var frameDropDown = []
+			
+			this.model.get("transitionList").each(function(transition){
+				//console.log(transition)
+				//console.log(transition.get('cid'))
+				frameDropDown.push({label : 'Frame - ' + transition.get('from') + '-' + transition.get('to'), value : transition['cid']})
+			})
+			this.model.set('frameDropDown' , frameDropDown)
 			//console.log(this.template())
 			this.$el.html(this.template({model : {}}));
 			 /*
@@ -41,14 +75,14 @@ define(function(require) {
 			//this.applyBindings();
 			var appendTo = this.$el
 			//appendTo.find("#accordion2").append(new TransitionItemView({model:this.model.get("transitionList").at(0)}).render().el);
-			
+			console.log('start appending')
 			this.model.get("transitionList").each(function(transition){
 				//console.log(appendTo.find("#accordion2"))
 				//console.log(new TransitionItemView({model:transition}).render().el)
 				
-				appendTo.find("#accordion2").append(new TransitionItemView({model:transition, fabricObject : params.fabricObject}).render().el);
+				appendTo.find("#accordion2").append(new TransitionItemView({model:transition, fabricObject : params.fabricObject}).el);
 			})
-			
+			console.log('end appending')
 			$("#accordion2").accordion({
 				heightStyle: "content",
 				collapsible : true,

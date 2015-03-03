@@ -44,17 +44,22 @@ define(function(require) {
 			});
 		},
 		addTransition : function(transition, atIndex){
+			console.log('atIndex paramter = ' + atIndex)
 			var listOfPropertiesCurrentlyHave = [];
+			var adjustFromToTime = false
 			transition.get('propertyTransitions').each(function(propertyTransition){
 				listOfPropertiesCurrentlyHave.push(propertyTransition.get('name'))
 			});
+			console.log('listOfPropertiesCurrentlyHave', listOfPropertiesCurrentlyHave)
 			var transitionToFetchFrom = null
-			if(!atIndex){
+			if(atIndex === undefined){
 				if(this.transitionList.length == 0){
 					atIndex = -1
 				}else{
 					atIndex = this.transitionList.length - 1
 				}
+			}else{
+				adjustFromToTime = true;
 			}
 			for(var prop in this.supportedProperties){
 				if(listOfPropertiesCurrentlyHave.indexOf(prop) == -1){
@@ -63,6 +68,7 @@ define(function(require) {
 						transition.get('propertyTransitions').add(new PropertyTransition({name : prop , from : transitionToFetchFrom.get(prop), to : transitionToFetchFrom.get(prop)}))
 					}else{
 						transitionToFetchFrom = this.transitionList[atIndex]
+						console.log('fetching transition from' , transitionToFetchFrom)
 						transitionToFetchFrom.get('propertyTransitions').each(function(propTrans){
 							if(propTrans.get('name') == prop){
 								transition.get('propertyTransitions').add(new PropertyTransition({name : prop , from : propTrans.get('to'), to : propTrans.get('to')}))
@@ -71,7 +77,27 @@ define(function(require) {
 					}
 				}
 			}
-			this.transitionList.push(transition)
+
+				
+			
+			console.log('atIndex = ' + atIndex)
+			this.transitionList.splice(atIndex + 1, 0, transition)
+			if(adjustFromToTime){
+				var newDurationAdded = transition.get('to') - transition.get('from')
+				console.log('new duration added' , newDurationAdded)
+				transition.set('from', transitionToFetchFrom.get('to'))
+				transition.set('to', transition.get('from') + newDurationAdded)
+				//now add duration to all remaining frames.
+				for(var i = atIndex+2 ; i < this.transitionList.length ; i++){
+					this.transitionList[i].set('to', this.transitionList[i].get('to') + newDurationAdded)
+					this.transitionList[i].set('from', this.transitionList[i].get('from') + newDurationAdded)
+				}
+			}
+			
+			
+			
+			//for(var i = atIndex ;i <= 
+			console.log('after adding transition list is' , this.transitionList)
 			return this;
 		},
 		addTransitions : function(transitions){
