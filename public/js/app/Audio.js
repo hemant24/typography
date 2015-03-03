@@ -87,11 +87,13 @@ define(function(require) {
 	}
 	
 	var _addTextToAnimator = function(button, region){
-		var text = new fabric.AText($(button).text(), new Properties());
+		var text = new fabric.AText($(button).text(), new Properties({left : this.animator.getCamera().get('left'), 
+			top : this.animator.getCamera().get('top')}));
 		
 		var start = parseInt(region.start*1000)
 		var end = parseInt(region.end*1000)
-		AnimationPalete.topBottom(text, start, end)
+		console.log('camera is' + this.animator.getCamera())
+		AnimationPalete.topBottom(text, start, end, this.animator.getCamera())
 		var frameRegion = this.addFramesRegion({
 					start : start,
 					end : end,

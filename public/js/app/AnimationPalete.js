@@ -7,19 +7,31 @@ define(function(require) {
 	var PropertyTransition = require('./PropertyTransition');
 	var AnimationPalete = {}
 	
-	AnimationPalete.topBottom = function(text, start, end){
+	AnimationPalete.topBottom = function(object, start, end, refObject){
 		var aTiming = getEnterLeaveTime(start, end)
-		console.log('aTiming', aTiming)
-		text
+		var startTop = (refObject.top - (refObject.height/2 + (refObject.height/2)*.4))
+		var endTop  = (refObject.top + ((refObject.height/2) + (refObject.height/2)*.4))
+		object
 			.addTransition( new Transition({from : aTiming.enterStart , to : aTiming.enterEnd})
-					.addPropertyTransition(new PropertyTransition({name : 'top', from : '-200', to : '250'}))
-					.addPropertyTransition(new PropertyTransition({name : 'left', from : '0', to : '150'})))
+					.addPropertyTransition(new PropertyTransition({name : 'top',  from : startTop, to : refObject.top})))
 			.addTransition( new Transition({from : aTiming.enterEnd , to : aTiming.leaveStart})
-					.addPropertyTransition(new PropertyTransition({name : 'top', from : '250', to : '250'}))
-					.addPropertyTransition(new PropertyTransition({name : 'left', from : '150', to : '150'})))
+					.addPropertyTransition(new PropertyTransition({name : 'top', from : refObject.top, to : refObject.top})))
 			.addTransition( new Transition({from : aTiming.leaveStart , to : aTiming.leaveEnd})
-					.addPropertyTransition(new PropertyTransition({name : 'top', from : '250', to : '400'}))
-					.addPropertyTransition(new PropertyTransition({name : 'left', from : '150', to : '150'})))
+					.addPropertyTransition(new PropertyTransition({name : 'top', from : refObject.top, to : endTop})))
+	}
+	
+	AnimationPalete.behindFront = function(object, start, end, refObject){
+		var aTiming = getEnterLeaveTime(start, end)
+		var startTop = (refObject.top - (refObject.height/2 + (refObject.height/2)*.4))
+		var endTop  = (refObject.top + ((refObject.height/2) + (refObject.height/2)*.4))
+		object
+			.addTransition( new Transition({from : aTiming.enterStart , to : aTiming.enterEnd})
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 0, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 0, to : 1})))
+			.addTransition( new Transition({from : aTiming.enterEnd , to : aTiming.leaveEnd})
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 1, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 1, to : 1})))
+			
 	}
 	
 	

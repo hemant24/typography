@@ -113,7 +113,13 @@ define(function(require) {
 			$.ajax({
 				url : '/video/',
 				contentType: 'application/json', 
-				data : JSON.stringify({fps: 25 , quality : 3, playLength : 5000, fabricCanvas : Previewer.animatorToJSON(animator, canvas)}),
+				data : JSON.stringify({
+							fps: parseInt($('#fps').val()) , 
+							quality : parseInt($("#quality").val()),
+							height : $("#resolution").val() == 1 ? 300 : 600 ,
+							width : $("#resolution").val() == 1 ? 300 : 600,
+							playLength : parseInt($('#playlength').val()), 
+							fabricCanvas : Previewer.animatorToJSON(animator, canvas)}),
 				type  : 'post',
 				success : function(data){
 					$("#videoLink").attr('href', 'output/' + data.url + '/' + data.filename)
@@ -142,8 +148,8 @@ define(function(require) {
 animator.play()*/
 			
 		var camera = new fabric.ACamera({
-		  top: 80,
-		  left : 120,
+		  top: 200,
+		  left : 300,
 		  fill: null,
 		  stroke: "black",
 		  strokeWidth: 3,
@@ -157,7 +163,7 @@ animator.play()*/
 		camera.saveToStartState();
 
 		canvas.add(camera)
-		
+		animator.add(camera)
 		
 		//animator.play();
 		

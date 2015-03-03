@@ -23,6 +23,8 @@ define(function(require) {
 			this.startState = options.startState || {};
 			this.listOfStartedTransitions = [];
 			this.canvas = null;
+			this.originX = 'center';
+			this.originY = 'center';
 			this.supportedProperties = {
 				top : '',
 				left : '',

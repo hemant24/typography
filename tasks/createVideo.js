@@ -13,7 +13,7 @@ function startTask(){
 			input: {
 				'-i' : outputDirectory + 'frame-%d.png',
 				'-f': 'image2',
-				'-r' : '25'
+				'-r' : job.data.fps
 				
 				
 			},
@@ -21,7 +21,7 @@ function startTask(){
 				'-vcodec': 'libx264',
 				//'-vcodec': 'mpeg4',
 				'-b' :  '1004M',
-				'-s' :  '300x300',
+				'-s' :  job.data.height + 'x' + job.data.width,
 				//'-crf' : '1', 
 			}
 		}

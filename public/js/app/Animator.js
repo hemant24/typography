@@ -15,6 +15,7 @@ define(function(require) {
 		this.playLength = playLength || 3000;
 		//this.isPreview = isPreview,
 		this.animateFor = animateFor || 'drawing';
+		this.camera = null;
 		this.fps = 25;
 	}
 	var now = null;
@@ -55,6 +56,19 @@ define(function(require) {
 		//console.log(this.canvas)
 		this.canvas.renderAll();
 		console.log('updating graphics took' + (new Date() - now ))
+	}
+	Animator.prototype.getCamera = function(){
+		if(this.camera){
+			return this.camera;
+		}
+		for(var i in this._objs){
+			var obj = this._objs[i];
+			console.log('type is ' + obj.get('type'))
+			if(obj.get('type') == 'aCamera'){
+				this.camera = obj;
+				return obj;
+			}
+		}
 	}
 	var _adjustCamera = function(camera){
 		if(camera.get('type') == 'aCamera' && (this.animateFor == 'server' || this.animateFor == 'preview' )){

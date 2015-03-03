@@ -38,6 +38,8 @@ var frameCreationJob = function(payload, dir){
 
   console.log('will process data' , payload);
   var totalNoOfFrames = parseInt( (payload['playLength']/1000) * payload['fps'])
+  var height = payload['height']
+  var width = payload['width']
   var totalNoOfCores = coreSize - 1
   var lastFrames = totalNoOfFrames % totalNoOfCores
   var eachCoreFrameSize = parseInt(totalNoOfFrames/totalNoOfCores)
@@ -62,6 +64,8 @@ var frameCreationJob = function(payload, dir){
 		from : from,
 		to : to,
 		dir :  dir,
+		height : height,
+		width : width,
 		totalWorker : totalNoOfCores
 	}).save( function(err){
 	   if( !err ) console.log( job.id );
@@ -76,7 +80,10 @@ var frameCreationJob = function(payload, dir){
 			title: 'Creation of Video',
 			folderName : 'toadd',
 			musicFile : 'toadd',
-			dir : job.data.dir
+			dir : job.data.dir,
+			height : job.data.height,
+			width : job.data.width,
+			fps : job.data.payload.fps
 		}).save( function(err){
 		   if( !err ) console.log( videoJob.id );
 		});
