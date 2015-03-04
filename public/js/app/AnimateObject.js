@@ -25,6 +25,10 @@ define(function(require) {
 			this.canvas = null;
 			this.originX = 'center';
 			this.originY = 'center';
+			this.borderColor = 'red',
+			this.cornerColor = 'red';
+			this.corerSize = 6;
+			this.transparentCorners = true;
 			this.supportedProperties = {
 				top : '',
 				left : '',

@@ -93,7 +93,7 @@ define(function(require) {
 		var start = parseInt(region.start*1000)
 		var end = parseInt(region.end*1000)
 		console.log('camera is' + this.animator.getCamera())
-		AnimationPalete.behindFront(text, start, end, this.animator.getCamera())
+		AnimationPalete.frontBehind(text, start, end, this.animator.getCamera())
 		var frameRegion = this.addFramesRegion({
 					start : start,
 					end : end,

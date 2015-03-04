@@ -12,6 +12,18 @@ define(function(require) {
 				//this.applyBindings();
 			},
 		  bindings: "data-bind",
+		  computeds: {
+			differ: {
+				deps: ["from", "to"],
+				get: function(from, to ) {
+					if( (to - from) != 0){
+						return "red"
+					}else{
+						return "none"
+					}
+				}
+			}
+		},	
 		  render : function(){
 			this.$el.html(this.template());
 			this.applyBindings();

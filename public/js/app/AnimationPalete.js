@@ -22,8 +22,6 @@ define(function(require) {
 	
 	AnimationPalete.behindFront = function(object, start, end, refObject){
 		var aTiming = getEnterLeaveTime(start, end)
-		var startTop = (refObject.top - (refObject.height/2 + (refObject.height/2)*.4))
-		var endTop  = (refObject.top + ((refObject.height/2) + (refObject.height/2)*.4))
 		object
 			.addTransition( new Transition({from : aTiming.enterStart , to : aTiming.enterEnd})
 					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 0, to : 1}))
@@ -34,6 +32,43 @@ define(function(require) {
 			.addTransition( new Transition({from : aTiming.leaveStart , to : aTiming.leaveEnd})
 					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 1, to : 6}))
 					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 1, to : 6}))
+					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 1, to : 0})))
+			
+	}
+	
+	AnimationPalete.behindFrontWithTurn = function(object, start, end, refObject){
+		var aTiming = getEnterLeaveTime(start, end)
+		object
+			.addTransition( new Transition({from : aTiming.enterStart , to : aTiming.enterEnd})
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 0, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 0, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'angle',  from : 0, to : 360})))
+			.addTransition( new Transition({from : aTiming.enterEnd , to : aTiming.leaveStart})
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 1, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 1, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'angle',  from : 360, to : 360})))
+			.addTransition( new Transition({from : aTiming.leaveStart , to : aTiming.leaveEnd})
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 1, to : 6}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 1, to : 6}))
+					.addPropertyTransition(new PropertyTransition({name : 'angle',  from : 360, to : 0}))
+					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 1, to : 0})))
+			
+	}
+	
+	AnimationPalete.frontBehind = function(object, start, end, refObject){
+		var aTiming = getEnterLeaveTime(start, end)
+		object
+			.addTransition( new Transition({from : aTiming.enterStart , to : aTiming.enterEnd})
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 6, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 6, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 0, to : 1})))
+			.addTransition( new Transition({from : aTiming.enterEnd , to : aTiming.leaveStart})
+					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 1, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 1, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 1, to : 1})))
+			.addTransition( new Transition({from : aTiming.leaveStart , to : aTiming.leaveEnd})
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 1, to : 0}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 1, to : 0}))
 					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 1, to : 0})))
 			
 	}
