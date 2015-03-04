@@ -16,8 +16,8 @@ define(function(require) {
 			"click .toShowOnCanvas": "toShowOnCanvas"
         },
 		bindings: {
-			"input.startAt": "value:from,events:['keyup']",
-			"input.endAt": "value:to,events:['keyup']",
+			"input.startAt": "value:integer(from),events:['keyup']",
+			"input.endAt": "value:integer(to),events:['keyup']",
 			"span.frameFrom": "text:from",
 			"span.frameTo": "text:to"
 		 },
