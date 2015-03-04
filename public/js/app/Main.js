@@ -14,7 +14,7 @@ define(function(require) {
 		
 		var AudioTrack = require('app/Audio')
 		var Properties = require('app/Properties')
-		
+		var SrtObjectGenerator = require('app/SrtObjectGenerator')
 		
 		var AnimateObjectView = require('app/view/AnimateObjectView')
 		
@@ -66,10 +66,10 @@ define(function(require) {
 
 		
 		var canvas = new fabric.Canvas('cc');
-		canvas.setBackgroundColor('#9199FF');
-		canvas.selectionColor  = 'black';
+		canvas.setBackgroundColor('#000000');
+		//canvas.selectionColor  = 'black';
 		//canvas.selectionBorderColor = 'black';
-		canvas.selectionLineWidth = 5;
+		//canvas.selectionLineWidth = 5;
 		var animator = new Animator(canvas,'drawing', 3000);
 		var drawingArea = new DrawingArea(canvas, "#drawingArea")
 		var audioTrack = new AudioTrack('to_add', animator)
@@ -89,12 +89,12 @@ define(function(require) {
 		//console.log(aText.getKeyframeByTime2(200))
 		
 		canvas.add(new fabric.Line([0, -1000, 0, 1000], {
-			stroke: 'black',
+			stroke: 'white',
 			selectable  : false
 		}));
 		
 		canvas.add(new fabric.Line([-1000,0, 1000, 0], {
-			stroke: 'black',
+			stroke: 'white',
 			selectable  : false
 		}));
 
@@ -151,7 +151,7 @@ animator.play()*/
 		  top: 200,
 		  left : 300,
 		  fill: null,
-		  stroke: "black",
+		  stroke: "#FFFFFF",
 		  strokeWidth: 3,
 		  width: 300,
 		  height: 300,
@@ -190,7 +190,10 @@ animator.play()*/
 			Previewer.preview(JSON.stringify(Previewer.animatorToJSON(animator, canvas)), 2000 )//animator.playLength)
 		})
 		
-		$("#generate").click(function(){
+		$("#generate").click(function(){ 
+			new SrtObjectGenerator({audioTrack : audioTrack}).generate();
+			//console.log(srtParser.fromSrt($("#lyrics").val(), true))
+			/*
 			var lyrics = $("#lyrics").val();
 			$("#lyrics").val('')
 			lyrics = lyrics.replace(/[ \t\r\n]+/g," ");
@@ -225,19 +228,6 @@ animator.play()*/
 					.addTransition( new Transition({from : leavingStartTime , to : leavingEndTime})
 							.addPropertyTransition(new PropertyTransition({name : 'top', from : '250', to : '400'}))
 							.addPropertyTransition(new PropertyTransition({name : 'left', from : '150', to : '150'})))
-					/*
-					.keyframe(enteringStartTime, enteringEndTime
-						,	new Properties({top : '-200', left : '0'})
-						,	new Properties({top : '250', left : '150'})
-						,	fabric.util.ease.easeOutBounce)
-					.keyframe(enteringEndTime, leavingStartTime
-						,	new Properties({top : '250', left : '150'})
-						,	new Properties({top : '250', left : '150'})
-						)
-					.keyframe(leavingStartTime, leavingEndTime
-						, 	new Properties({top : '250', left : '150'})
-						,	new Properties({top : '400', left : '150'})
-						,	fabric.util.ease.easeOutBounce)*/
 				)
 				timeElapsed = timeElapsed + eachWordDuration;
 				audioTrack.addFramesRegion({
@@ -246,14 +236,9 @@ animator.play()*/
 					color : "red",
 					data : text
 				})
-				/*
-				var newDiv = "<h3><a href=\"#\">" + word + " </a></h3><div>New Content</div>";
-				$("#accordion1").append(newDiv)
-				$("#accordion1").accordion("refresh");    */
-			
 			}
-			console.log(animator)
-			//animator.play()
+			
+		*/
 		})
 			/*
 		  new $.Zebra_Accordion('#accordion', {

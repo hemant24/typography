@@ -9,7 +9,7 @@ define(function(require) {
 		}
 		this.top = params.top || 0;
 		this.left = params.left || 0;
-		this.fill = params.fill || "#FFFFFF";
+		this.fill = params.fill || "#FF0000";
 		this.fontSize  = params.fontSize || 80;
 		//this.shadow = params.shadow || "rgba(0,0,0,1) 2px 2px 2px";
 		this.fontFamily  =  params.fontFamily || "Times New Roman";

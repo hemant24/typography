@@ -86,26 +86,33 @@ define(function(require) {
 			}
 	}
 	
+	AudioTrack.prototype.addTextObjectToAnimator = function(params){
+		var object = new fabric.AText(params.text, new Properties({left : this.animator.getCamera().get('left'), 
+			top : this.animator.getCamera().get('top')}));;
+		var startTime = params.startTime;
+		var endTime = params.endTime;
+		var frameRegion = this.addFramesRegion({
+			start : startTime,
+			end : endTime,
+			color : "red",
+			data : object
+		})
+		this.animator.add(object);
+		object.get('animateObjectModel').set('region', frameRegion);
+		return object;
+	}
+	
 	var _addTextToAnimator = function(button, region){
-		var text = new fabric.AText($(button).text(), new Properties({left : this.animator.getCamera().get('left'), 
-			top : this.animator.getCamera().get('top')}));
-		
 		var start = parseInt(region.start*1000)
 		var end = parseInt(region.end*1000)
-		console.log('camera is' + this.animator.getCamera())
-		AnimationPalete.frontBehind(text, start, end, this.animator.getCamera())
-		var frameRegion = this.addFramesRegion({
-					start : start,
-					end : end,
-					color : "red",
-					data : text
-				})
-		this.animator.add(text)
-		console.log('animatedObject Model is ' , text.get('animateObjectModel'))
-		console.log('frameRegion', frameRegion)
-		text.get('animateObjectModel').set('region', frameRegion);
-			console.log('animatedObject Model is ' , text.get('animateObjectModel'))
-		console.log('after adding palete', text)
+		var text = this.addTextObjectToAnimator({
+			text : $(button).text(),
+			startTime : start,
+			endTime : end
+		})
+	
+		AnimationPalete.behindFrontWithTurn(text, start, end, this.animator.getCamera())
+		
 		var lyrics = $.trim($("#lyrics").val());
 		lyrics = lyrics.replace(/[ \t\r\n]+/g," ");
 		var wordList = lyrics.split(" ");
