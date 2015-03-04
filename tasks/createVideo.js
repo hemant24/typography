@@ -26,12 +26,23 @@ function startTask(){
 			}
 		}
 		
-		ffmpegOptions['output'][outputDirectory + 'output.mp4'] = null
+		ffmpegOptions['output'][outputDirectory + 'video.mp4'] = null
 		var ffmpeg = new FFmpeg(ffmpegOptions);
 		ffmpeg.start();
 		 
 		ffmpeg.on('progress', function(progress) {
 			console.log(progress);
+		})
+		ffmpeg.on('done', function(progress) {
+			console.log('video creation is completed from done');
+		}) 
+		
+		ffmpeg.on('exit', function(progress) {
+			console.log('video creation is completed from exit');
+			done();
+		})
+		ffmpeg.on('complete', function(progress) {
+			console.log('video creation is completed from complete');
 		})
 
 		

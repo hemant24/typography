@@ -27,7 +27,7 @@ define(function(require) {
 		var transition = this.transition = new Transition({from : 100 , to : 200})
 		var propertyTransition1 = new PropertyTransition({name : 'top', from : 100, to : 200})
 		this.transition.get("propertyTransitions").add( propertyTransition1)
-		this.init.call(this);
+		//this.init.call(this);
 	}
 	
 	AudioTrack.prototype.init = function(){
@@ -43,8 +43,8 @@ define(function(require) {
 			height : 100
 		});
 		_bindEvents.call(this)
-		this.wavesurfer.load('assets/demo.mp3');
-		//this.wavesurfer.loadBlob(this.file);
+		//this.wavesurfer.load('assets/demo.mp3');
+		this.wavesurfer.loadBlob(this.file);
 	}
 	AudioTrack.prototype.addFramesRegion = function(option){
 		option.start = option.start;
@@ -93,7 +93,7 @@ define(function(require) {
 		var start = parseInt(region.start*1000)
 		var end = parseInt(region.end*1000)
 		console.log('camera is' + this.animator.getCamera())
-		AnimationPalete.topBottom(text, start, end, this.animator.getCamera())
+		AnimationPalete.behindFront(text, start, end, this.animator.getCamera())
 		var frameRegion = this.addFramesRegion({
 					start : start,
 					end : end,

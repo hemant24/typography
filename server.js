@@ -2,6 +2,7 @@
 var app = require('./app');
 var createFrameTask = require('./tasks/createFrame')
 var createVideoTask = require('./tasks/createVideo')
+var mergeAudioVideoTask = require('./tasks/mergeAudioVideo')
 var http = require('http');
 
 var server = http.createServer(app);
@@ -45,6 +46,7 @@ if(cluster.isMaster){
 	console.log(createFrameTask)
 	createFrameTask();
 	createVideoTask();
+	mergeAudioVideoTask();
 }
 
 

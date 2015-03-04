@@ -102,8 +102,8 @@ define(function(require) {
 			dataType: 'json',
 			add : function(e, data){
 				audioTrack.fileDataContext = data;
-				//audioTrack.file = data.files[0];
-				//audioTrack.init();
+				audioTrack.file = data.files[0];
+				audioTrack.init();
 			},
 			done: function (e, data) {
 			}

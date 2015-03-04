@@ -88,6 +88,17 @@ var frameCreationJob = function(payload, dir){
 		   if( !err ) console.log( videoJob.id );
 		});
 		
+		videoJob.on('complete', function(){
+			console.log('will start the merge job');
+			var audioVideoJob = jobs.create('mergeAudioVideo', {
+				title: 'Merge Audio and Video',
+				dir : job.data.dir,
+			}).save( function(err){
+			   if( !err ) console.log( audioVideoJob.id );
+			});
+		
+		})
+		
 	
 	}
 	console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>job is completed : ', job.data.totalWorker)

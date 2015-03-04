@@ -11,7 +11,7 @@ function handleAudioUpload (req, res, next) {
             })(req, res, next);
 			
 			 upload.on('end', function (fileInfo, req, res) {
-				fs.rename('./public/output/' + req.query.dir + '/' + fileInfo.name, './public/output/' + req.query.dir + '/input.mp3')
+				fs.rename('./public/output/' + req.query.dir + '/' + fileInfo.name, './public/output/' + req.query.dir + '/audio.mp3')
 			 });
         }
 		

@@ -1,2 +1,4 @@
 /public/output
 /node_modules
+
+!/node_modules/plain-ffmpeg/plain-ffmpeg.js
