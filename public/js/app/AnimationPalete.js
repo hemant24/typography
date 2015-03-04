@@ -28,9 +28,13 @@ define(function(require) {
 			.addTransition( new Transition({from : aTiming.enterStart , to : aTiming.enterEnd})
 					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 0, to : 1}))
 					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 0, to : 1})))
-			.addTransition( new Transition({from : aTiming.enterEnd , to : aTiming.leaveEnd})
+			.addTransition( new Transition({from : aTiming.enterEnd , to : aTiming.leaveStart})
 					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 1, to : 1}))
 					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 1, to : 1})))
+			.addTransition( new Transition({from : aTiming.leaveStart , to : aTiming.leaveEnd})
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 1, to : 6}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 1, to : 6}))
+					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 1, to : 0})))
 			
 	}
 	
