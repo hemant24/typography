@@ -26,21 +26,23 @@ define(function(require) {
 				var eachWordDurationMapList = WordGroupUtil.eachWordDurationMapList(region.text, startTime, endTime);
 				console.log('eachWordDurationMapList', eachWordDurationMapList)
 				var paleteIndex = getRandomPalete();
+				var previousObjectList = [];
 				console.log('paleteIndex '+ paleteIndex)
 				for(var i in eachWordDurationMapList){
 					var wordDurationMap = eachWordDurationMapList[i];
 					
 						
 					//console.log('added text is ' , text)
-					if(paleteIndex > 0 && paleteIndex <= 1){
+					if(true || (paleteIndex > 0 && paleteIndex <= 1)){
 						var text = this.audioTrack.addTextObjectToAnimator({
 							text : wordDurationMap.word,
 							startTime : wordDurationMap.start,
 							endTime : endTime//wordDurationMap.end
 						})
-						
+						previousObjectList.push(text);
 						GroupAnimationPalete.topBottom({
 							object : text,
+							previousObjectList : previousObjectList,
 							startTime : wordDurationMap.start,
 							endTime : wordDurationMap.end
 						}, {

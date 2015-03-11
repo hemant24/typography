@@ -114,6 +114,7 @@ define(function(require) {
 						var startTime = parseInt(region.start*1000)
 						var endTime = parseInt(region.end*1000)
 						var eachWordDurationMapList = WordGroupUtil.eachWordDurationMapList(line, startTime, endTime);
+						var previousObjectList = [];
 						for(var i in eachWordDurationMapList){
 							var wordDurationMap = eachWordDurationMapList[i];
 								var text = audioTrack.addTextObjectToAnimator({
@@ -121,8 +122,10 @@ define(function(require) {
 									startTime : wordDurationMap.start,
 									endTime : endTime//wordDurationMap.end
 								})
+								previousObjectList.push(text);
 								GroupAnimationPalete.topBottom({
 									object : text,
+									previousObjectList : previousObjectList,
 									startTime : wordDurationMap.start,
 									endTime : wordDurationMap.end
 								}, {
