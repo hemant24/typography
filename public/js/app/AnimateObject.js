@@ -47,9 +47,17 @@ define(function(require) {
 			}, this);
 		},
 		toObject: function() {
-			return fabric.util.object.extend(this.callSuper('toObject'), {
+			
+			if(this.get('type') == 'aCamera'){
+				console.log('yes exporting camera')
+				console.log('start state is ', this.startState);
+				this.set('left', this.startState['left']);
+				this.set('top', this.startState['top']);
+			}
+			var result =  fabric.util.object.extend(this.callSuper('toObject'), {
 			  transitionList: this.get('transitionList')
 			});
+			return result
 		},
 		addTransition : function(transition, atIndex){
 			console.log('atIndex paramter = ' + atIndex)
@@ -138,8 +146,8 @@ define(function(require) {
 			var lastTransitionEndTime = lastTransitionOfObject['to']
 			//console.log('now inside forwad frame' + now)
 			//console.log('lastTransitionEndTime ' + lastTransitionEndTime)
-			if(now > lastTransitionEndTime){
-				//console.log('going to remove the object')
+			if(now > lastTransitionEndTime && this.get('type') != 'aCamera'){
+				//console.log('going to remove the object ' + this.get('type'))
 				if(this.canvas && this.canvas.contains(this)){
 					this.canvas.remove(this);
 				}
@@ -194,6 +202,7 @@ define(function(require) {
 			  if(!this.canvas.contains(this)){
 				this.canvas.add(this);
 			  }
+			  //console.log('Animating , type ' + this.get('type') )
 			  this.listOfStartedTransitions.push({startedAt : atTime, transition : transition});
 			  //console.log('length of last started after finding transition :  ' +  this.listOfStartedTransitions.length )
 			  //console.log('took : ', endTime - startTime, ' to search for keyframe')

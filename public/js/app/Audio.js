@@ -18,7 +18,9 @@ define(function(require) {
 	var TransitionView = require('app/view/TransitionView');
 	var AnimateObjectModel = require('./AnimateObjectModel');
 	var AnimationPalete = require('./AnimationPalete');
-	var Properties = require('app/Properties')
+	var Properties = require('app/Properties');
+	var GroupAnimationPalete = require('./GroupAnimationPalete');
+	var WordGroupUtil =  require('./WordGroupUtil');
 	
 	var AudioTrack = function(file, animator){
 		
@@ -52,11 +54,39 @@ define(function(require) {
 		return this.wavesurfer.addFramesRegion(option)
 	}
 	
-	var _addTextButtonsToDialog = function(appendTo, region){
+	var _addTextButtonsToDialog = function(mainDiv, region){
 		console.log('_addTextButtonsToDialog call with this', this)
+		var audioTrack = this;
+		var appendTo = mainDiv.find('#textButton');
+		var paleteSection = mainDiv.find('#paleteSection')
 		appendTo.children('.lyricsText').each(function(btn){
 			this.remove();
 		})
+		
+		paleteSection.find('input[type=radio][name=paleteType]').unbind('change').bind('change', function(){
+			console.log($.trim(this.value))
+			console.log($.trim(this.value) == 'wordGroup')
+			if(this.value == 'wordGroup'){
+				var wordGroup = []
+				appendTo.children('.lyricsText').each(function(btn){
+					wordGroup.push($(this).text());
+					this.remove();
+				})
+				_addWordGroup.call(audioTrack, appendTo, wordGroup.join(" "), region);
+			}else if(this.value == 'word'){
+				var wordGroup = []
+				appendTo.children('.lyricsText').each(function(btn){
+					wordGroup.push($(this).text());
+					this.remove();
+				})
+				var line = wordGroup.join(" ");
+				var wordList = line.split(" ");
+				_addWords.call(audioTrack, appendTo, wordList, wordList.length, region);
+			}
+			
+		});
+		
+		
 		var noOfWords = 4;
 		var worldsToAdd = 0;
 		var wordList = [];
@@ -74,7 +104,48 @@ define(function(require) {
 		}else{
 			worldsToAdd = -1
 		}
-		for(var i=0 ; i < worldsToAdd ; i++){
+		_addWords.call(audioTrack, appendTo, wordList, worldsToAdd, region);
+	}
+	
+	var _addWordGroup = function(appendTo, line, region){
+		var button = $('<button class="lyricsText">'+ line +'</button>')
+		button.click(function(audioTrack){
+					return function(){
+						var startTime = parseInt(region.start*1000)
+						var endTime = parseInt(region.end*1000)
+						var eachWordDurationMapList = WordGroupUtil.eachWordDurationMapList(line, startTime, endTime);
+						for(var i in eachWordDurationMapList){
+							var wordDurationMap = eachWordDurationMapList[i];
+								var text = audioTrack.addTextObjectToAnimator({
+									text : wordDurationMap.word,
+									startTime : wordDurationMap.start,
+									endTime : endTime//wordDurationMap.end
+								})
+								GroupAnimationPalete.topBottom({
+									object : text,
+									startTime : wordDurationMap.start,
+									endTime : wordDurationMap.end
+								}, {
+									camera : audioTrack.animator.getCamera()
+								},{
+									startTime : startTime,
+									endTime : endTime, 
+									totalObject : eachWordDurationMapList.length,
+									currentObjectIndex : parseInt(i) + 1
+								},{
+									transitionName : AnimationPalete.getRandomTransition()
+								})
+								
+								_removeTextFromLyricsText(wordDurationMap.word);
+								$(this).remove();
+						}
+					}
+				}(this))
+		appendTo.append(button)				
+	}
+	
+	var _addWords = function(appendTo, wordList, wordsToAdd, region){
+		for(var i=0 ; i < wordsToAdd ; i++){
 				var text = wordList[i]
 				var button = $('<button class="lyricsText">'+ text +'</button>')
 				button.click(function(audioTrack){
@@ -110,16 +181,18 @@ define(function(require) {
 			startTime : start,
 			endTime : end
 		})
+		AnimationPalete.addTransitionToObject(AnimationPalete.getRandomTransition(), text, start, end,  this.animator.getCamera());
+		//AnimationPalete.behindFrontWithTurn(text, start, end, this.animator.getCamera())
+		_removeTextFromLyricsText($(button).text());
+		$(button).remove();
+	}
 	
-		AnimationPalete.behindFrontWithTurn(text, start, end, this.animator.getCamera())
-		
+	var _removeTextFromLyricsText = function(text){
 		var lyrics = $.trim($("#lyrics").val());
 		lyrics = lyrics.replace(/[ \t\r\n]+/g," ");
 		var wordList = lyrics.split(" ");
-		wordList.splice(wordList.indexOf($(button).text()),1)
+		wordList.splice(wordList.indexOf(text),1)
 		$("#lyrics").val(wordList.join(' ' ))
-		$(button).remove();
-				
 	}
 	
 	var _bindEvents = function(){
@@ -351,7 +424,7 @@ define(function(require) {
 	}
 	
 	var _progressAnimation = function(time){
-		console.log('current time '+ (time*1000))
+		//console.log('current time '+ (time*1000))
 		this.animator.seek(time*1000);
 	}
 	

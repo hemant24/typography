@@ -36,7 +36,7 @@ router.post('/', function(req, res, next) {
 
 var frameCreationJob = function(payload, dir){
 
-  console.log('will process data' , payload);
+  //console.log('will process data' , payload);
   var totalNoOfFrames = parseInt( (payload['playLength']/1000) * payload['fps'])
   var height = payload['height']
   var width = payload['width']

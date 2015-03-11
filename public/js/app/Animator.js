@@ -46,16 +46,16 @@ define(function(require) {
 	Animator.prototype.seek = function(seekTime){
 		var now = new Date()
 		//console.log('animateFor', this.animateFor)
-		console.log('total number of object in fabric canvas is : ' + this.canvas._objects.length)
+		//console.log('total number of object in fabric canvas is : ' + this.canvas._objects.length)
 		for(var i in this._objs){
 			var obj = this._objs[i];
 			obj.updateCoords(seekTime);
 			_adjustCamera.call(this, obj);
 		}
-		console.log('updating logic took ' + (new Date() - now))
+		//console.log('updating logic took ' + (new Date() - now))
 		//console.log(this.canvas)
 		this.canvas.renderAll();
-		console.log('updating graphics took' + (new Date() - now ))
+		//console.log('updating graphics took' + (new Date() - now ))
 	}
 	Animator.prototype.getCamera = function(){
 		if(this.camera){
@@ -72,7 +72,8 @@ define(function(require) {
 	}
 	var _adjustCamera = function(camera){
 		if(camera.get('type') == 'aCamera' && (this.animateFor == 'server' || this.animateFor == 'preview' )){
-			//console.log('okay this is camera')
+			//console.log('okay this is camera');
+			//console.log('camera is ' , camera)
 			pinToCenter.call(this, camera)
 		}
 	}
@@ -87,7 +88,7 @@ define(function(require) {
                           };
 						  
 	function pinToCenter(obj){
-		console.log('camera quality is '  + obj.get('quality'))
+		//console.log('camera quality is '  + obj.get('quality'))
 		var scaleLevel = obj.get('quality')
 		this.canvas.setZoom(scaleLevel)
 		//obj.setCoords() why it is not working

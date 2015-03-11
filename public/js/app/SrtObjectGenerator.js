@@ -5,6 +5,8 @@ define(function(require) {
 	require('wavesurfer.regions')
 	var srtParser = require('subtitle.parser')
 	var AnimationPalete = require('./AnimationPalete');
+	var GroupAnimationPalete = require('./GroupAnimationPalete');
+	var WordGroupUtil =  require('./WordGroupUtil');
 	var SrtObjectGenerator = function(params){
 		this.audioTrack = params.audioTrack
 	}
@@ -21,25 +23,55 @@ define(function(require) {
 					start : startTime/1000,
 					end : endTime/1000
 					})
-				var eachWordDurationMapList = _eachWordDurationMapList(region.text, startTime, endTime);
+				var eachWordDurationMapList = WordGroupUtil.eachWordDurationMapList(region.text, startTime, endTime);
 				console.log('eachWordDurationMapList', eachWordDurationMapList)
-				
+				var paleteIndex = getRandomPalete();
+				console.log('paleteIndex '+ paleteIndex)
 				for(var i in eachWordDurationMapList){
 					var wordDurationMap = eachWordDurationMapList[i];
-					var text = this.audioTrack.addTextObjectToAnimator({
+					
+						
+					//console.log('added text is ' , text)
+					if(paleteIndex > 0 && paleteIndex <= 1){
+						var text = this.audioTrack.addTextObjectToAnimator({
+							text : wordDurationMap.word,
+							startTime : wordDurationMap.start,
+							endTime : endTime//wordDurationMap.end
+						})
+						
+						GroupAnimationPalete.topBottom({
+							object : text,
+							startTime : wordDurationMap.start,
+							endTime : wordDurationMap.end
+						}, {
+							camera : this.audioTrack.animator.getCamera()
+						},{
+							startTime : startTime,
+							endTime : endTime, 
+							totalObject : eachWordDurationMapList.length,
+							currentObjectIndex : parseInt(i) + 1
+						},{
+							transitionName : AnimationPalete.getRandomTransition()
+						})
+					}else{
+						var text = this.audioTrack.addTextObjectToAnimator({
 							text : wordDurationMap.word,
 							startTime : wordDurationMap.start,
 							endTime : wordDurationMap.end
 						})
-						
-					console.log('added text is ' , text)
-					AnimationPalete.behindFrontWithTurn(text, wordDurationMap.start, wordDurationMap.end, this.audioTrack.animator.getCamera());
+						AnimationPalete.addTransitionToObject(AnimationPalete.getRandomTransition(), text, wordDurationMap.start, wordDurationMap.end, this.audioTrack.animator.getCamera());
+					}
 				}
 			}
 		}else{
 			alert('Please supply valid audio file');
 		}
 	}
+	var getRandomPalete = function(){
+		var index = Math.floor(Math.random() * 2);
+		return index;
+	}
+	
 	var _totalDuration = function(start , end){
 		return end - start
 	}

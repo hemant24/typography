@@ -104,12 +104,17 @@ define(function(require) {
 				audioTrack.fileDataContext = data;
 				audioTrack.file = data.files[0];
 				audioTrack.init();
+				audioTrack.wavesurfer.on('ready', function(){
+					console.log('total duration is ' + parseInt(audioTrack.wavesurfer.getDuration() * 1000));
+				})
+				
 			},
 			done: function (e, data) {
 			}
 		});		
 		
 		$("#createVideo").click(function(){
+			console.log('current fps is ' , parseInt($('#fps').val()))
 			$.ajax({
 				url : '/video/',
 				contentType: 'application/json', 
@@ -161,10 +166,11 @@ animator.play()*/
 		camera.lockScalingY = true;
 		camera.lockRotation = true;
 		camera.saveToStartState();
-
+		camera.on('selected' , function(){
+					console.log(this)
+				})
 		canvas.add(camera)
 		animator.add(camera)
-		
 		//animator.play();
 		
 		$("#seekBtn").click(function(){
@@ -187,7 +193,7 @@ animator.play()*/
 			console.log('going to call previwer')
 			console.log(JSON.stringify(Previewer.animatorToJSON(animator, canvas)))
 			//console.log(JSON.stringify(Previewer.canvasToJSON(canvas)))
-			Previewer.preview(JSON.stringify(Previewer.animatorToJSON(animator, canvas)), 2000 )//animator.playLength)
+			Previewer.preview(JSON.stringify(Previewer.animatorToJSON(animator, canvas)), 15000 )//animator.playLength)
 		})
 		
 		$("#generate").click(function(){ 

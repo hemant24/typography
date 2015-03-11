@@ -41,7 +41,11 @@ var dir = './public/output/'+job.data.dir+'/'
 console.log('create dir', dir)
 
 if (!fs.existsSync(dir)){
-    fs.mkdirSync(dir);
+	try {
+		fs.mkdirSync(dir);
+	} catch(e) {
+		if ( e.code != 'EEXIST' ) throw e;
+	}
 }
 
 console.log('delta is' , delta)
