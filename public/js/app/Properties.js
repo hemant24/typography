@@ -3,7 +3,7 @@ if (typeof define !== 'function') {
 }
 define(function(require) {
 	var Properties = function(params){
-		console.log('initializing properites with value', params)
+		//console.log('initializing properites with value', params)
 		if(!params){
 			params = {}
 		}

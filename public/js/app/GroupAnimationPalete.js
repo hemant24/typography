@@ -13,6 +13,7 @@ define(function(require) {
 	/**
 	*	objectParams.startTime
 	*	objectParams.object
+	*   objectParams.previousObjectList
 	*
 	*	cameraParams.trackObject : true or false.
 	*   cameraParams.camera : camera instance.
@@ -26,6 +27,7 @@ define(function(require) {
 	*	groupParams.currentObjectIndex : index of current object for which transition is being calculated.
 	*	
 	*	animationParams.animationPalete
+	*	animationParams.audioTrack
 	*/
 	GroupAnimationPalete.topBottom = function(objectParams, cameraParams, groupParams, animationParams){
 		/*console.log('objectParams', objectParams)
@@ -34,22 +36,45 @@ define(function(require) {
 		var aTiming = getEnterLeaveTime(objectParams.startTime, groupParams.endTime);
 		//_adjustObjectStartingPosition(objectParams, groupParams.currentObjectIndex, groupParams.totalObject);
 		//_addCameraTransitions(cameraParams.camera, objectParams);
+		var cameraTransition = null
 		if(groupParams.currentObjectIndex != 1){
 			var random = getRandomValue(2);
 			if(random > 0 && random <= 1){
 				//_addjustCamera(cameraParams.camera, objectParams, groupParams.currentObjectIndex, groupParams.totalObject);
-				CameraMovements.moveDown(cameraParams.camera, objectParams, groupParams.currentObjectIndex, groupParams.totalObject);
+				cameraTransition = CameraMovements.moveDown(cameraParams.camera, objectParams, groupParams.currentObjectIndex, groupParams.totalObject, animationParams.audioTrack);
 			}else{
-				CameraMovements.moveRight(cameraParams.camera, objectParams, groupParams.currentObjectIndex, groupParams.totalObject);
+				cameraTransition = CameraMovements.moveRight(cameraParams.camera, objectParams, groupParams.currentObjectIndex, groupParams.totalObject, animationParams.audioTrack);
 			}
 		}
+		//console.log('setting ', objectParams.object ,' with camera transition ' , cameraTransition)
+		objectParams.object.set('camerTransitions', cameraTransition);
 		//console.log('adding animation pallete', objectParams.object, 'start time is ' ,objectParams.startTime , 'end time is ',  groupParams.endTime)
 		AnimationPalete.addTransitionToObject(animationParams.transitionName, objectParams.object, objectParams.startTime, groupParams.endTime, cameraParams.camera, aTiming);
 		if(groupParams.currentObjectIndex == groupParams.totalObject){
 			//_moveCameraToInitialPosition(cameraParams.camera)
-			CameraMovements.moveCameraToInitialPosition(cameraParams.camera);
+			CameraMovements.moveCameraToInitialPosition(cameraParams.camera, animationParams.audioTrack);
+			var camerStartAndEndTime = getCameraStartEndTimeInGroup(objectParams);
+			
+			if(camerStartAndEndTime){
+				//console.log('goint to add camerStartAndEndTime', camerStartAndEndTime)
+				animationParams.audioTrack.addCameraRegion({camera : cameraParams.camera, startTime : camerStartAndEndTime.startTime, endTime : camerStartAndEndTime.endTime});
+				//console.log('camera is ',  cameraParams.camera)
+			}
 		}
 			
+	}
+	
+	var getCameraStartEndTimeInGroup = function(objectParams){
+		if(objectParams && objectParams.previousObjectList && objectParams.previousObjectList.length && objectParams.previousObjectList.length > 1){
+			var firstTransition = objectParams.previousObjectList[1].get('transitionList')[0]
+			var lastTransition = objectParams.previousObjectList[objectParams.previousObjectList.length-1].get('transitionList')[1]
+			var startTime = parseInt(firstTransition.get('from'))
+			var endTime = parseInt(lastTransition.get('to')) + 100 //here 100, should get from CameraMovements
+			return {
+				startTime : startTime,
+				endTime : endTime
+			}
+		}
 	}
 	
 	var getRandomValue = function(upper){
@@ -81,7 +106,7 @@ define(function(require) {
 	var getEnterLeaveTime = function(start, end){
 		var eachWordDuration = end - start
 		var enteringStartTime = start
-		var eachWordEnterStartEndDt = parseInt(eachWordDuration * .07)
+		var eachWordEnterStartEndDt = parseInt(eachWordDuration * .09)
 		var enteringEndTime = enteringStartTime + eachWordEnterStartEndDt
 		var leavingStartTime = (start + eachWordDuration) -eachWordEnterStartEndDt
 		var leavingEndTime = end

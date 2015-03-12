@@ -136,7 +136,8 @@ define(function(require) {
 									totalObject : eachWordDurationMapList.length,
 									currentObjectIndex : parseInt(i) + 1
 								},{
-									transitionName : AnimationPalete.getRandomTransition()
+									transitionName : AnimationPalete.getRandomTransition(),
+									audioTrack : audioTrack
 								})
 								
 								_removeTextFromLyricsText(wordDurationMap.word);
@@ -172,6 +173,20 @@ define(function(require) {
 			data : object
 		})
 		this.animator.add(object);
+		object.get('animateObjectModel').set('region', frameRegion);
+		return object;
+	}
+	
+	AudioTrack.prototype.addCameraRegion = function(params){
+		var object = params.camera;
+		var startTime = params.startTime;
+		var endTime = params.endTime;
+		var frameRegion = this.addFramesRegion({
+			start : startTime,
+			end : endTime,
+			color : "yellow",
+			data : object
+		})
 		object.get('animateObjectModel').set('region', frameRegion);
 		return object;
 	}
@@ -344,7 +359,8 @@ define(function(require) {
 	var _updateAnimateFrames = function(region, direction){
 		//console.log('on region change' , region)
 		var animateObject = region.data;
-		if(animateObject.transitionList && animateObject.transitionList.length){
+		var associatedCamera = animateObject.get('camerTransitions');
+		if(animateObject.transitionList && animateObject.transitionList.length && animateObject.get('type')!= 'aCamera'){
 			var firstKeyframe = animateObject.transitionList[0]
 			var lastKeyframe = animateObject.transitionList[animateObject.transitionList.length - 1]
 			var firstKeyframeStartAt = firstKeyframe.get('from')
@@ -356,9 +372,18 @@ define(function(require) {
 			
 			var newDuration = regionEndAt -regionStartAt
 			var oldDuration = lastKeyframeEndAt - firstKeyframeStartAt
+			if(associatedCamera){
+				var transitionDuration = parseInt(associatedCamera.get('to')) - parseInt(associatedCamera.get('from'))
+				console.log('transitionDuration', transitionDuration);
+				console.log('going to change to and from of associatedCamera')
+				console.log('associatedCamera ', associatedCamera)
+				associatedCamera.set('from', regionStartAt)
+				associatedCamera.set('to', regionStartAt+transitionDuration)
+				console.log('end change to and from of associatedCamera')
+			}
 			var action = ""
-			//console.log('oldduration', oldDuration)
-			//console.log('newduration', newDuration)
+			console.log('oldduration '+ oldDuration)
+			console.log('newduration '+ newDuration)
 			if(newDuration != oldDuration){
 				var perChange = parseInt(((newDuration - oldDuration)/oldDuration)*100)  // parseInt(((regionEndAt - lastKeyframeEndAt)/lastKeyframeEndAt)*100)
 				_strechOrSequezeDurationToAllKeyframes.call(this, perChange, animateObject.transitionList, region, direction)

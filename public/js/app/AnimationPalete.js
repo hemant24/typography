@@ -166,7 +166,7 @@ define(function(require) {
 	AnimationPalete.getRandomTransition = function(){
 		var transitionList = Object.keys(allTransitions);
 		var index = Math.floor(Math.random() * transitionList.length);
-		console.log('random index is ' + index)
+		//console.log('random index is ' + index)
 		return transitionList[index]
 	}
 	

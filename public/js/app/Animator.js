@@ -63,7 +63,7 @@ define(function(require) {
 		}
 		for(var i in this._objs){
 			var obj = this._objs[i];
-			console.log('type is ' + obj.get('type'))
+			//console.log('type is ' + obj.get('type'))
 			if(obj.get('type') == 'aCamera'){
 				this.camera = obj;
 				return obj;

@@ -29,6 +29,7 @@ define(function(require) {
 			this.cornerColor = 'red';
 			this.corerSize = 6;
 			this.transparentCorners = true;
+			this.camerTransitions = null;
 			this.supportedProperties = {
 				top : '',
 				left : '',
@@ -91,9 +92,11 @@ define(function(require) {
 			return result
 		},
 		addTransition : function(transition, atIndex){
+			//console.log('adding transition to type ' , this.get('type'));
 			console.log('atIndex paramter = ' + atIndex)
 			console.log('newly add cid' + transition['cid'])
 			console.log('b4')
+			
 			for(var idx in this.transitionList){
 				console.log(this.transitionList[idx]['cid'])
 			}

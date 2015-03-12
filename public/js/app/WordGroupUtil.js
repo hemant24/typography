@@ -12,9 +12,9 @@ define(function(require) {
 	}
 	WordGroupUtil.eachWordDurationMapList = function(line, start , end){
 		var totalDuration =  WordGroupUtil.totalDuration(start, end);
-		console.log('parsing line' , line)
+		//console.log('parsing line' , line)
 		var wordList =  WordGroupUtil.getWordList(line);
-		console.log('after parsing' , wordList)
+		//console.log('after parsing' , wordList)
 		var eachWordDuration = parseInt(totalDuration/wordList.length);
 		var wordDurationMap = []
 		var elapsedTime = start

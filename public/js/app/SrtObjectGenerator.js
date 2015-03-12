@@ -12,7 +12,6 @@ define(function(require) {
 	}
 	SrtObjectGenerator.prototype.generate = function(){
 		var audioRegions = srtParser.fromSrt($("#lyrics").val(), true)
-		console.log(audioRegions)
 		if(this.audioTrack){
 			for(var i in audioRegions){
 				var region = audioRegions[i];
@@ -24,10 +23,10 @@ define(function(require) {
 					end : endTime/1000
 					})
 				var eachWordDurationMapList = WordGroupUtil.eachWordDurationMapList(region.text, startTime, endTime);
-				console.log('eachWordDurationMapList', eachWordDurationMapList)
+				//console.log('eachWordDurationMapList', eachWordDurationMapList)
 				var paleteIndex = getRandomPalete();
 				var previousObjectList = [];
-				console.log('paleteIndex '+ paleteIndex)
+				//console.log('paleteIndex '+ paleteIndex)
 				for(var i in eachWordDurationMapList){
 					var wordDurationMap = eachWordDurationMapList[i];
 					
@@ -58,7 +57,8 @@ define(function(require) {
 							totalObject : eachWordDurationMapList.length,
 							currentObjectIndex : parseInt(i) + 1
 						},{
-							transitionName : AnimationPalete.getRandomTransition()
+							transitionName : AnimationPalete.getRandomTransition(),
+							audioTrack : this.audioTrack
 						})
 					}else{
 						var text = this.audioTrack.addTextObjectToAnimator({

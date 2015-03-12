@@ -140,42 +140,45 @@ var ifColliding = function(rect1, rect2){
       return intersection.status === 'Intersection'; 
 }
 
-CameraMovements.moveRight = function(camera, objectParams, currentIndex, totalCount){
+CameraMovements.moveRight = function(camera, objectParams, currentIndex, totalCount, audioTrack){
 	var xDelta = 10;
 	var currentObject = objectParams.object;
 	var previousObjectLastKnownPosition = _getPreviousWordXY(objectParams);
 	var x =  previousObjectLastKnownPosition.x + previousObjectLastKnownPosition.dx + xDelta + (currentObject.get('width')/2 ) ;
 	var y =  previousObjectLastKnownPosition.y;
 	//returnDeltaXYIfColliding({x : x, y : y}, objectParams);
-	_addCameraTransitions(camera, objectParams, {x : x, y:y});
+	return _addCameraTransitions(camera, objectParams, {x : x, y:y}, audioTrack);
 }
 	
-CameraMovements.moveDown = function(camera, objectParams, currentIndex, totalCount){
+CameraMovements.moveDown = function(camera, objectParams, currentIndex, totalCount, audioTrack){
 	var yDelta = 10;
 	var currentObject = objectParams.object;
 	var previousObjectLastKnownPosition = _getPreviousWordXY(objectParams);
 	var x =  previousObjectLastKnownPosition.x;
 	var y =  previousObjectLastKnownPosition.y + previousObjectLastKnownPosition.dy + yDelta;
 	//returnDeltaXYIfColliding({x : x, y : y}, objectParams);
-	_addCameraTransitions(camera, objectParams, {x : x, y:y});
+	return _addCameraTransitions(camera, objectParams, {x : x, y:y}, audioTrack);
 }
 
-var _addCameraTransitions = function(camera, objectParams, to){
+var _addCameraTransitions = function(camera, objectParams, to, audioTrack){
 	var cameraEndDelta = 50;
 	var cameraLastKnownPosition = _getCameraLastKnownXY(camera);
 	console.log('adding camera transition from : ' + cameraLastKnownPosition.y + ' to : ' + to.y);
-	camera
-			.addTransition( new Transition({from : objectParams.startTime , to : objectParams.startTime + cameraEndDelta})
+	var movementTransition =  new Transition({from : objectParams.startTime , to : objectParams.startTime + cameraEndDelta})
 					.addPropertyTransition(new PropertyTransition({name : 'top',  from : cameraLastKnownPosition.y, to : to.y}))	
-					.addPropertyTransition(new PropertyTransition({name : 'left',  from : cameraLastKnownPosition.x, to : to.x}))	
-			)
+					.addPropertyTransition(new PropertyTransition({name : 'left',  from : cameraLastKnownPosition.x, to : to.x}));
+	camera
+			.addTransition( movementTransition )
 			.addTransition( new Transition({from : objectParams.startTime + cameraEndDelta , to : objectParams.endTime})
 					.addPropertyTransition(new PropertyTransition({name : 'top',  from : to.y, to : to.y}))	
 					.addPropertyTransition(new PropertyTransition({name : 'left',  from : to.x, to : to.x}))	
 			)
+	return movementTransition
+	//audioTrack.addCameraRegion({camera : camera, startTime : objectParams.startTime, endTime : objectParams.startTime + cameraEndDelta});
+	//audioTrack.addCameraRegion({camera : camera, startTime : objectParams.startTime + cameraEndDelta, endTime : objectParams.endTime});
 }
 
-CameraMovements.moveCameraToInitialPosition = function(camera){
+CameraMovements.moveCameraToInitialPosition = function(camera, audioTrack){
 		console.log('this is group last text so adding transition to move camera to inital location');
 		var transitionList = camera.get('transitionList')
 		var lastTransition = transitionList[transitionList.length - 1];

@@ -380,7 +380,7 @@ WaveSurfer.initRegions = function () {
 };
 
 WaveSurfer.addRegion = function (options) {
-	console.log('inside add reginon')
+	//console.log('inside add reginon')
     this.initRegions();
     return this.regions.add(options);
 };

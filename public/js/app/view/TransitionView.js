@@ -45,6 +45,9 @@ define(function(require) {
 			this.template = _.template(template);
 			this.region = params.region;
 			var frameDropDown = []
+			var region = this.model.get('region')
+			var regionStartTime = region['start']
+			var regionEndTime = region['end']
 			
 			this.model.get("transitionList").each(function(transition){
 				//console.log(transition)
@@ -78,10 +81,10 @@ define(function(require) {
 			//appendTo.find("#accordion2").append(new TransitionItemView({model:this.model.get("transitionList").at(0)}).render().el);
 			console.log('start appending')
 			this.model.get("transitionList").each(function(transition){
-				//console.log(appendTo.find("#accordion2"))
-				//console.log(new TransitionItemView({model:transition}).render().el)
 				
-				appendTo.find("#accordion2").append(new TransitionItemView({model:transition, fabricObject : params.fabricObject}).el);
+				if(transition.get('from') >= regionStartTime && transition.get('to') <= regionEndTime){
+					appendTo.find("#accordion2").append(new TransitionItemView({model:transition, fabricObject : params.fabricObject}).el);
+				}
 			})
 			console.log('end appending')
 			$("#accordion2").accordion({

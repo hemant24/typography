@@ -18,7 +18,7 @@ define(function(require) {
 		},
 		initialize: function(){
 			this.on('change', function(){
-				console.log('okay  change transition object itself')
+				//console.log('okay  change transition object itself')
 			})
 		},
 		addPropertyTransition : function(propertyTransition){
