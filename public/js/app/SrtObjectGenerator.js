@@ -39,6 +39,11 @@ define(function(require) {
 							startTime : wordDurationMap.start,
 							endTime : endTime//wordDurationMap.end
 						})
+						if((Math.floor(Math.random() * 3)) <= 1 ){
+							text.set('fontSize', 120);
+						}else{
+							text.set('fontSize', 40);
+						}
 						previousObjectList.push(text);
 						GroupAnimationPalete.topBottom({
 							object : text,

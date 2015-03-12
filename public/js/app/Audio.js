@@ -313,7 +313,21 @@ define(function(require) {
 		
 		this.wavesurfer.drawer.on('click', function(e, progress){
 			var duration = this.wavesurfer.getDuration();
-			var elapsedTime = progress * duration * 1000
+			var elapsedTime = progress * duration * 1000;
+			//first clear all rendered object 
+			
+			var currentRenderedObject = this.animator.canvas.getObjects();
+			for(var i = 0 ; i < currentRenderedObject.length ; i++){
+				var obj = currentRenderedObject[i];
+				console.log(obj)
+				if(obj.get('type') == 'aText'){
+					console.log('removing it ....');
+					this.animator.canvas.remove(obj);
+					this.animator.canvas.renderAll();
+				}				
+			}
+			//this.animator.canvas.renderAll();
+			
 			this.animator.seek(elapsedTime);
 		}.bind(this))
 		

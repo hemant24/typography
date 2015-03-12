@@ -67,22 +67,97 @@ var _getPreviousWordXY = function(objectParams){
 	}
 }
 
-CameraMovements.moveRight = function(camera, objectParams, currentIndex, totalCount){
-		var xDelta = 10;
-		var currentObject = objectParams.object;
-		var previousObjectLastKnownPosition = _getPreviousWordXY(objectParams);
-		var x =  previousObjectLastKnownPosition.x + previousObjectLastKnownPosition.dx + xDelta + (currentObject.get('width')/2 ) ;
-		var y =  previousObjectLastKnownPosition.y;
-		_addCameraTransitions(camera, objectParams, {x : x, y:y});
+var getObjectFutureXY = function(object){
+	var x = object.get('left');
+	var y = object.get('top');
+	var objectTransitionList = object ? object.get('transitionList') : []
+	if(objectTransitionList && objectTransitionList.length && objectTransitionList.length > 0){
+		var firstTransition = objectTransitionList[0];
+		firstTransition.get('propertyTransitions').each(function(propTrans){
+						if(propTrans.get('name') == 'left'){
+							x = propTrans.get('to');
+						}
+						if(propTrans.get('name') == 'top'){
+							y = propTrans.get('to');
+						}
+					})
+
 	}
+	return { x : x, y : y}
+}
+
+var getRectCoord = function(centerPoint, object){
+	var topLeftX = centerPoint.x - object.get('width')/2
+	var topLeftY = centerPoint.y - object.get('height')/2
+	
+	var topRightX = centerPoint.x + object.get('width')/2
+	var topRightY = centerPoint.y - object.get('height')/2
+	
+	var bottomRightX = centerPoint.x + object.get('width')/2
+	var bottomRightY = centerPoint.y + object.get('height')/2
+	
+	var bottomLeftX = centerPoint.x - object.get('width')/2
+	var bottomLeftY = centerPoint.y + object.get('height')/2
+	
+	return {
+		topLeftX : topLeftX,
+		topLeftY : topLeftY,
+		topRightX : topRightX,
+		topRightY : topRightY,
+		bottomLeftX : bottomLeftX,
+		bottomLeftY : bottomLeftY,
+		bottomRightX : bottomRightX,
+		bottomRightY : bottomRightY,
+	}
+}
+
+var returnDeltaXYIfColliding = function(currentXY, objectParams){
+	var currentObject = objectParams.object;
+	var currentRect = getRectCoord({x : currentXY.x, y : currentXY.y}, objectParams.object) 
+	if(objectParams.previousObjectList && objectParams.previousObjectList.length && objectParams.previousObjectList.length > 0){
+		for(var i = 0 ; i <= (objectParams.previousObjectList.length -2 ); i++){
+			var previousObject = objectParams.previousObjectList[i];
+			var previousObjectCenterPoint = getObjectFutureXY(previousObject);
+			var previousRect = getRectCoord(previousObjectCenterPoint, previousObject)
+			if(ifColliding(currentRect, previousRect)){
+				console.log('yes ', currentObject.get('text') , ' is colliding with ', previousObject.get('text'));
+			}
+		}
+	}
+}
+
+var ifColliding = function(rect1, rect2){
+	 var tl = new fabric.Point(rect1.topLeftX, rect1.topLeftY);
+	 var tr = new fabric.Point(rect1.topRightX, rect1.topRightY);
+	 var bl = new fabric.Point(rect1.bottomLeftX, rect1.bottomLeftY);
+	 var br = new fabric.Point(rect1.bottomRightX, rect1.bottomRightY);
+		  
+	intersection = fabric.Intersection.intersectPolygonRectangle(
+            [tl, tr, br, bl],
+            new fabric.Point(rect2.topLeftX , rect2.topLeftY+50),
+			new fabric.Point(rect2.bottomRightX , rect2.bottomRightY - 50)
+          );
+      return intersection.status === 'Intersection'; 
+}
+
+CameraMovements.moveRight = function(camera, objectParams, currentIndex, totalCount){
+	var xDelta = 10;
+	var currentObject = objectParams.object;
+	var previousObjectLastKnownPosition = _getPreviousWordXY(objectParams);
+	var x =  previousObjectLastKnownPosition.x + previousObjectLastKnownPosition.dx + xDelta + (currentObject.get('width')/2 ) ;
+	var y =  previousObjectLastKnownPosition.y;
+	//returnDeltaXYIfColliding({x : x, y : y}, objectParams);
+	_addCameraTransitions(camera, objectParams, {x : x, y:y});
+}
 	
 CameraMovements.moveDown = function(camera, objectParams, currentIndex, totalCount){
-		var yDelta = 10;
-		var currentObject = objectParams.object;
-		var previousObjectLastKnownPosition = _getPreviousWordXY(objectParams);
-		var x =  previousObjectLastKnownPosition.x;
-		var y =  previousObjectLastKnownPosition.y + previousObjectLastKnownPosition.dy + yDelta;
-		_addCameraTransitions(camera, objectParams, {x : x, y:y});
+	var yDelta = 10;
+	var currentObject = objectParams.object;
+	var previousObjectLastKnownPosition = _getPreviousWordXY(objectParams);
+	var x =  previousObjectLastKnownPosition.x;
+	var y =  previousObjectLastKnownPosition.y + previousObjectLastKnownPosition.dy + yDelta;
+	//returnDeltaXYIfColliding({x : x, y : y}, objectParams);
+	_addCameraTransitions(camera, objectParams, {x : x, y:y});
 }
 
 var _addCameraTransitions = function(camera, objectParams, to){

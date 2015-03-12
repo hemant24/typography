@@ -39,6 +39,37 @@ define(function(require) {
 				opacity : ''
 			
 			}
+			// for double click
+			this.__lastClickTime = +new Date();
+			this.__lastPointer = { };
+			this.on('mousedown', function(options){
+				this.__newClickTime = +new Date();
+				var newPointer = this.canvas.getPointer(options.e);
+				console.log('mouse donw');
+				var isDoubleClick = this.__newClickTime - this.__lastClickTime < 500 &&
+				this.__lastPointer.x === newPointer.x &&
+				this.__lastPointer.y === newPointer.y
+				
+				if(isDoubleClick){
+					this.fire('dblclick');
+				}
+				this.__lastClickTime = this.__newClickTime;
+				this.__lastPointer = newPointer;
+			})
+			
+			this.on('dblclick', function(){
+				/*var transitionView = new TransitionView( {model : this.get('animateObjectModel'), fabricObject : this})
+				$("#dialog").dialog({
+					show : true,
+					width: 700,
+					close : function(){
+						transitionView.remove()
+					}
+				})*/
+				this.get('animateObjectModel').get('region')['wavesurfer'].fireEvent('frames-region-dblclick', this.get('animateObjectModel').get('region'));
+				//console.log('double clicked', this.get('animateObjectModel').get('region'));
+			})
+			
 			return this;
 		},
 		saveToStartState : function(){ //not needed any more
