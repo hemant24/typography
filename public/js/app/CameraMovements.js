@@ -85,19 +85,46 @@ var getObjectFutureXY = function(object){
 	}
 	return { x : x, y : y}
 }
+var getTextHeight = function(object) {
+  var font = object.get('fontSize') + 'px ' + object.get('fontFamily')
+  console.log('called get Rect corred with font ' + font);
+  var text = $('<span>' + object.get('text')+'</span>').css({ font: font });
+  var block = $('<div style="display: inline-block; width: 1px; height: 0px;"></div>');
+  var div = $('<div></div>');
+  div.append(text, block);
+  var body = $('body');
+  body.append(div);
+
+  try {
+    var result = {};
+    block.css({ verticalAlign: 'baseline' });
+    result.ascent = block.offset().top - text.offset().top;
+
+    block.css({ verticalAlign: 'bottom' });
+    result.height = block.offset().top - text.offset().top;
+
+    result.descent = result.height - result.ascent;
+
+  } finally {
+    div.remove();
+  }
+
+  return result;
+};
+
 
 var getRectCoord = function(centerPoint, object){
-	var topLeftX = centerPoint.x - object.get('width')/2
-	var topLeftY = centerPoint.y - object.get('height')/2
+	var topLeftX = centerPoint.x - (object.get('width')/2)
+	var topLeftY = centerPoint.y - (getTextHeight(object).height/2);//object.get('height')/2
 	
-	var topRightX = centerPoint.x + object.get('width')/2
-	var topRightY = centerPoint.y - object.get('height')/2
+	var topRightX = centerPoint.x + (object.get('width')/2)
+	var topRightY = centerPoint.y - (getTextHeight(object).height/2);//object.get('height')/2
 	
-	var bottomRightX = centerPoint.x + object.get('width')/2
-	var bottomRightY = centerPoint.y + object.get('height')/2
+	var bottomRightX = centerPoint.x + (object.get('width')/2)
+	var bottomRightY = centerPoint.y + (getTextHeight(object).height/2);//object.get('height')/2
 	
-	var bottomLeftX = centerPoint.x - object.get('width')/2
-	var bottomLeftY = centerPoint.y + object.get('height')/2
+	var bottomLeftX = centerPoint.x - (object.get('width')/2)
+	var bottomLeftY = centerPoint.y + (getTextHeight(object).height/2);//object.get('height')/2
 	
 	return {
 		topLeftX : topLeftX,
@@ -111,18 +138,50 @@ var getRectCoord = function(centerPoint, object){
 	}
 }
 
-var returnDeltaXYIfColliding = function(currentXY, objectParams){
+var returnDeltaXYIfColliding = function(currentXY, objectParams, direction){
 	var currentObject = objectParams.object;
 	var currentRect = getRectCoord({x : currentXY.x, y : currentXY.y}, objectParams.object) 
 	if(objectParams.previousObjectList && objectParams.previousObjectList.length && objectParams.previousObjectList.length > 0){
 		for(var i = 0 ; i <= (objectParams.previousObjectList.length -2 ); i++){
 			var previousObject = objectParams.previousObjectList[i];
-			var previousObjectCenterPoint = getObjectFutureXY(previousObject);
-			var previousRect = getRectCoord(previousObjectCenterPoint, previousObject)
+			//var previousObjectCenterPoint = getObjectFutureXY(previousObject);
+			//var previousRect = getRectCoord(previousObjectCenterPoint, previousObject)
+			_adjustIfColliding(currentObject, currentXY, previousObject, direction);
+			/*
 			if(ifColliding(currentRect, previousRect)){
 				console.log('yes ', currentObject.get('text') , ' is colliding with ', previousObject.get('text'));
-			}
+			}*/
 		}
+	}
+}
+
+var _adjustIfColliding = function(currentObject, currentXY, previousObject, direction, numberOfIteration){
+	if(!numberOfIteration){
+		numberOfIteration = 0;
+	}
+	var currentRect = getRectCoord({x : currentXY.x, y : currentXY.y}, currentObject)
+	var previousObjectCenterPoint = getObjectFutureXY(previousObject);
+	var previousRect = getRectCoord(previousObjectCenterPoint, previousObject)
+	if(ifColliding(currentRect, previousRect)){
+		numberOfIteration++;
+		console.log('yes ', currentObject.get('text') , ' is colliding with ', previousObject.get('text'));
+		console.log('so adjusting with 10 px each')
+		if(direction == 'x'){
+			currentXY.x = currentXY.x + 3;
+		}
+		if(direction == 'y'){
+			currentXY.y = currentXY.y + 3;
+		}
+		if(	numberOfIteration > 20){
+			console.log('increase the number of iteration')
+			return ;
+			//do nothing
+		}else{
+			_adjustIfColliding(currentObject, currentXY, previousObject, direction, numberOfIteration);
+		}
+	}else{
+		return;
+		// do nothing, 
 	}
 }
 
@@ -134,8 +193,8 @@ var ifColliding = function(rect1, rect2){
 		  
 	intersection = fabric.Intersection.intersectPolygonRectangle(
             [tl, tr, br, bl],
-            new fabric.Point(rect2.topLeftX , rect2.topLeftY+50),
-			new fabric.Point(rect2.bottomRightX , rect2.bottomRightY - 50)
+            new fabric.Point(rect2.topLeftX , rect2.topLeftY+30),
+			new fabric.Point(rect2.bottomRightX , rect2.bottomRightY - 30)
           );
       return intersection.status === 'Intersection'; 
 }
@@ -146,8 +205,9 @@ CameraMovements.moveRight = function(camera, objectParams, currentIndex, totalCo
 	var previousObjectLastKnownPosition = _getPreviousWordXY(objectParams);
 	var x =  previousObjectLastKnownPosition.x + previousObjectLastKnownPosition.dx + xDelta + (currentObject.get('width')/2 ) ;
 	var y =  previousObjectLastKnownPosition.y;
-	//returnDeltaXYIfColliding({x : x, y : y}, objectParams);
-	return _addCameraTransitions(camera, objectParams, {x : x, y:y}, audioTrack);
+	var to = {x : x , y : y}
+	returnDeltaXYIfColliding(to, objectParams, 'x');
+	return _addCameraTransitions(camera, objectParams, to, audioTrack);
 }
 	
 CameraMovements.moveDown = function(camera, objectParams, currentIndex, totalCount, audioTrack){
@@ -156,14 +216,16 @@ CameraMovements.moveDown = function(camera, objectParams, currentIndex, totalCou
 	var previousObjectLastKnownPosition = _getPreviousWordXY(objectParams);
 	var x =  previousObjectLastKnownPosition.x;
 	var y =  previousObjectLastKnownPosition.y + previousObjectLastKnownPosition.dy + yDelta;
-	//returnDeltaXYIfColliding({x : x, y : y}, objectParams);
-	return _addCameraTransitions(camera, objectParams, {x : x, y:y}, audioTrack);
+	var to = {x : x , y : y}
+	returnDeltaXYIfColliding(to, objectParams, 'y');
+	return _addCameraTransitions(camera, objectParams, to, audioTrack);
 }
 
 var _addCameraTransitions = function(camera, objectParams, to, audioTrack){
 	var cameraEndDelta = 50;
 	var cameraLastKnownPosition = _getCameraLastKnownXY(camera);
-	console.log('adding camera transition from : ' + cameraLastKnownPosition.y + ' to : ' + to.y);
+	console.log('adding camera Y transition from : ' + cameraLastKnownPosition.y + ' to : ' + to.y);
+	console.log('adding camera X transition from : ' + cameraLastKnownPosition.x + ' to : ' + to.x);
 	var movementTransition =  new Transition({from : objectParams.startTime , to : objectParams.startTime + cameraEndDelta})
 					.addPropertyTransition(new PropertyTransition({name : 'top',  from : cameraLastKnownPosition.y, to : to.y}))	
 					.addPropertyTransition(new PropertyTransition({name : 'left',  from : cameraLastKnownPosition.x, to : to.x}));
@@ -195,12 +257,14 @@ CameraMovements.moveCameraToInitialPosition = function(camera, audioTrack){
 							}
 						})
 		}
-		
-		camera
-			.addTransition( new Transition({from : lastTransition.get('to') , to :lastTransition.get('to') +100})
+		var transition = new Transition({from : lastTransition.get('to') , to :lastTransition.get('to') +100})
 					.addPropertyTransition(new PropertyTransition({name : 'top',  from : lastKnownY, to : 200}))	
-					.addPropertyTransition(new PropertyTransition({name : 'left',  from : lastKnownX, to : 300}))	
+					.addPropertyTransition(new PropertyTransition({name : 'left',  from : lastKnownX, to : 300}));
+		camera
+			.addTransition(	
+				transition
 			)
+		return transition;
 	}
 	
 

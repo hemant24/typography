@@ -52,7 +52,9 @@ define(function(require) {
 		AnimationPalete.addTransitionToObject(animationParams.transitionName, objectParams.object, objectParams.startTime, groupParams.endTime, cameraParams.camera, aTiming);
 		if(groupParams.currentObjectIndex == groupParams.totalObject){
 			//_moveCameraToInitialPosition(cameraParams.camera)
-			CameraMovements.moveCameraToInitialPosition(cameraParams.camera, animationParams.audioTrack);
+			var moveToIntitialTranistion = CameraMovements.moveCameraToInitialPosition(cameraParams.camera, animationParams.audioTrack);
+			moveToIntitialTranistion.set('linkedTo', false);
+			moveToIntitialTranistion.set('linkedFrom', false);
 			var camerStartAndEndTime = getCameraStartEndTimeInGroup(objectParams);
 			
 			if(camerStartAndEndTime){
@@ -106,7 +108,7 @@ define(function(require) {
 	var getEnterLeaveTime = function(start, end){
 		var eachWordDuration = end - start
 		var enteringStartTime = start
-		var eachWordEnterStartEndDt = parseInt(eachWordDuration * .09)
+		var eachWordEnterStartEndDt = parseInt(eachWordDuration * .07)
 		var enteringEndTime = enteringStartTime + eachWordEnterStartEndDt
 		var leavingStartTime = (start + eachWordDuration) -eachWordEnterStartEndDt
 		var leavingEndTime = end

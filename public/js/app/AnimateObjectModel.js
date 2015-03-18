@@ -44,10 +44,10 @@ var AnimateObjectModel = Backbone.AssociatedModel.extend({
 		var aboveTranistion = this.get("transitionList").at(indexOfChangedTransition-1)
 		var belowTransition = this.get("transitionList").at(indexOfChangedTransition+1)
 		console.log('aboveTransition', aboveTranistion)
-		if(aboveTranistion){
+		if(aboveTranistion && aboveTranistion.get('linkedTo') == true){
 			aboveTranistion.set("to", parseFloat(t.get("from")))
 		}
-		if(belowTransition){
+		if(belowTransition && belowTransition.get('linkedFrom') == true){
 			belowTransition.set("from", parseFloat(t.get("to")))
 		}
 		console.log('belowTransition', belowTransition)

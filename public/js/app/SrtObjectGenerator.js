@@ -10,72 +10,94 @@ define(function(require) {
 	var SrtObjectGenerator = function(params){
 		this.audioTrack = params.audioTrack
 	}
+	var allFontFamily = ["Comic Sans MS", "Times New Roman", "Impact", "Trebuchet MS", "Verdana"]
+	var allFontSize = [120, 40, 80 ]
 	SrtObjectGenerator.prototype.generate = function(){
 		var audioRegions = srtParser.fromSrt($("#lyrics").val(), true)
 		if(this.audioTrack){
 			for(var i in audioRegions){
-				var region = audioRegions[i];
-				var startTime = region.startTime;
-				var endTime = region.endTime;
-				
-				this.audioTrack.wavesurfer.addRegion({
-					start : startTime/1000,
-					end : endTime/1000
-					})
-				var eachWordDurationMapList = WordGroupUtil.eachWordDurationMapList(region.text, startTime, endTime);
-				//console.log('eachWordDurationMapList', eachWordDurationMapList)
-				var paleteIndex = getRandomPalete();
-				var previousObjectList = [];
-				//console.log('paleteIndex '+ paleteIndex)
-				for(var i in eachWordDurationMapList){
-					var wordDurationMap = eachWordDurationMapList[i];
-					
-						
-					//console.log('added text is ' , text)
-					if(true || (paleteIndex > 0 && paleteIndex <= 1)){
-						var text = this.audioTrack.addTextObjectToAnimator({
-							text : wordDurationMap.word,
-							startTime : wordDurationMap.start,
-							endTime : endTime//wordDurationMap.end
-						})
-						if((Math.floor(Math.random() * 3)) <= 1 ){
-							text.set('fontSize', 120);
-						}else{
-							text.set('fontSize', 40);
-						}
-						previousObjectList.push(text);
-						GroupAnimationPalete.topBottom({
-							object : text,
-							previousObjectList : previousObjectList,
-							startTime : wordDurationMap.start,
-							endTime : wordDurationMap.end
-						}, {
-							camera : this.audioTrack.animator.getCamera()
-						},{
-							startTime : startTime,
-							endTime : endTime, 
-							totalObject : eachWordDurationMapList.length,
-							currentObjectIndex : parseInt(i) + 1
-						},{
-							transitionName : AnimationPalete.getRandomTransition(),
-							audioTrack : this.audioTrack
-						})
-					}else{
-						var text = this.audioTrack.addTextObjectToAnimator({
-							text : wordDurationMap.word,
-							startTime : wordDurationMap.start,
-							endTime : wordDurationMap.end
-						})
-						AnimationPalete.addTransitionToObject(AnimationPalete.getRandomTransition(), text, wordDurationMap.start, wordDurationMap.end, this.audioTrack.animator.getCamera());
-					}
-				}
+				var region = audioRegions[i]
+				setTimeout(function(region){
+					return function(){
+						addRandomAnimation.call(this, region)
+					}.bind(this)
+				}.bind(this)(region), 10)
 			}
 		}else{
 			alert('Please supply valid audio file');
 		}
 	}
+	
+	var addRandomAnimation = function(region){
+		var startTime = region.startTime;
+		var endTime = region.endTime;
+		
+		this.audioTrack.wavesurfer.addRegion({
+			start : startTime/1000,
+			end : endTime/1000
+			})
+		var eachWordDurationMapList = WordGroupUtil.eachWordDurationMapList(region.text, startTime, endTime);
+		//console.log('eachWordDurationMapList', eachWordDurationMapList)
+		var paleteIndex = getRandomPalete();
+		var previousObjectList = [];
+		//console.log('paleteIndex '+ paleteIndex)
+		for(var i in eachWordDurationMapList){
+			var wordDurationMap = eachWordDurationMapList[i];
+			
+				
+			//console.log('added text is ' , text)
+			if(true || (paleteIndex > 1 && paleteIndex <= 4)){
+				var text = this.audioTrack.addTextObjectToAnimator({
+					text : wordDurationMap.word,
+					startTime : wordDurationMap.start,
+					endTime : endTime//wordDurationMap.end
+				})
+				setRandomFont(text);
+				previousObjectList.push(text);
+				GroupAnimationPalete.topBottom({
+					object : text,
+					previousObjectList : previousObjectList,
+					startTime : wordDurationMap.start,
+					endTime : wordDurationMap.end
+				}, {
+					camera : this.audioTrack.animator.getCamera()
+				},{
+					startTime : startTime,
+					endTime : endTime, 
+					totalObject : eachWordDurationMapList.length,
+					currentObjectIndex : parseInt(i) + 1
+				},{
+					transitionName : AnimationPalete.getRandomTransition(),
+					audioTrack : this.audioTrack
+				})
+			}else{
+				var text = this.audioTrack.addTextObjectToAnimator({
+					text : wordDurationMap.word,
+					startTime : wordDurationMap.start,
+					endTime : wordDurationMap.end
+				})
+				setRandomFont(text);
+				AnimationPalete.addTransitionToObject(AnimationPalete.getRandomTransition(), text, wordDurationMap.start, wordDurationMap.end, this.audioTrack.animator.getCamera());
+			}
+		}
+	}
+	var setRandomFont = function(text){
+		text.set('fontSize', allFontSize[Math.floor(Math.random() * (allFontSize.length))])
+		text.set('fontFamily', allFontFamily[Math.floor(Math.random() * (allFontFamily.length))])
+	}
+	
+	var setProperFont = function(text, size){
+		text.set('fontSize', size)
+		var width = text.get('width');
+		if(width >= 290){
+			setProperFont(text, size - 1)
+		}else{
+			// do nothing
+		}
+	}
+	
 	var getRandomPalete = function(){
-		var index = Math.floor(Math.random() * 2);
+		var index = Math.floor(Math.random() * 4);
 		return index;
 	}
 	

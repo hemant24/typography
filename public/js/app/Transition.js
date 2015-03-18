@@ -14,6 +14,8 @@ define(function(require) {
 		 defaults : {
 			from : '',
 			to : '',
+			linkedFrom : true,
+			linkedTo : true,
 			propertyTransitions : []
 		},
 		initialize: function(){

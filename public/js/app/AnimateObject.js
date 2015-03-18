@@ -25,8 +25,8 @@ define(function(require) {
 			this.canvas = null;
 			this.originX = 'center';
 			this.originY = 'center';
-			this.borderColor = 'red',
-			this.cornerColor = 'red';
+			this.borderColor = 'white',
+			this.cornerColor = 'white';
 			this.corerSize = 6;
 			this.transparentCorners = true;
 			this.camerTransitions = null;

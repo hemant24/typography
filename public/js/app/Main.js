@@ -26,6 +26,9 @@ define(function(require) {
 		var Transition = require('./Transition');
 		var PropertyTransition = require('./PropertyTransition');
 		//var TransitionView = require('app/view/TransitionView');
+		var allCanvasColor = ['#9600BF', '#FF0000', '#00B524', '#1D02CC']
+		var canvasColor = allCanvasColor[Math.floor(Math.random() * (allCanvasColor.length))]
+		var gridAndCameraColor = "#000000"
 		
 		$("#add").click(function(){
 			
@@ -66,7 +69,9 @@ define(function(require) {
 
 		
 		var canvas = new fabric.Canvas('cc');
-		canvas.setBackgroundColor('#000000');
+		//canvas.setBackgroundColor('#000000');
+		canvas.setBackgroundColor(canvasColor);
+		
 		//canvas.selectionColor  = 'black';
 		//canvas.selectionBorderColor = 'black';
 		//canvas.selectionLineWidth = 5;
@@ -89,12 +94,12 @@ define(function(require) {
 		//console.log(aText.getKeyframeByTime2(200))
 		
 		canvas.add(new fabric.Line([0, -1000, 0, 1000], {
-			stroke: 'white',
+			stroke: gridAndCameraColor,
 			selectable  : false
 		}));
-		
+		gridAndCameraColor
 		canvas.add(new fabric.Line([-1000,0, 1000, 0], {
-			stroke: 'white',
+			stroke: gridAndCameraColor,
 			selectable  : false
 		}));
 
@@ -156,7 +161,7 @@ animator.play()*/
 		  top: 200,
 		  left : 300,
 		  fill: null,
-		  stroke: "#FFFFFF",
+		  stroke: gridAndCameraColor,
 		  strokeWidth: 3,
 		  width: 300,
 		  height: 300,
@@ -190,10 +195,18 @@ animator.play()*/
 		})
 		
 		$("#preview").click(function(){
-			console.log('going to call previwer')
-			console.log(JSON.stringify(Previewer.animatorToJSON(animator, canvas)))
+			//console.log('going to call previwer')
+			//console.log(JSON.stringify(Previewer.animatorToJSON(animator, canvas)))
 			//console.log(JSON.stringify(Previewer.canvasToJSON(canvas)))
-			Previewer.preview(JSON.stringify(Previewer.animatorToJSON(animator, canvas)), 15000 )//animator.playLength)
+			Previewer.preview(JSON.stringify(Previewer.animatorToJSON(animator, canvas)), 15000 ,1, function(animator){
+				//audioTrack.wavesurfer.stop();
+				audioTrack.wavesurfer.playPause();
+				audioTrack.wavesurfer.backend.un('audioprocess');
+				audioTrack.wavesurfer.backend.on('audioprocess', function(time){
+					animator.seek(time*1000);
+				});
+				
+			})//animator.playLength)
 		})
 		
 		$("#generate").click(function(){ 

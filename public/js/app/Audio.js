@@ -352,6 +352,8 @@ define(function(require) {
 		this.wavesurfer.backend.on('audioprocess', _progressAnimation.bind(this));
 		
 		$("#playPause").click(function(){
+			this.wavesurfer.backend.un('audioprocess');
+			this.wavesurfer.backend.on('audioprocess', _progressAnimation.bind(this));
 			this.wavesurfer.playPause()
 		}.bind(this))
 	}

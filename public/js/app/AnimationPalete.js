@@ -73,20 +73,20 @@ define(function(require) {
 		'frontBehind' : {
 			enter : function(object, refObject){
 				var enterTransition = new Transition()
-					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 6, to : 1}))
-					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 6, to : 1}))
-					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 0, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 6, to : 1, ease : fabric.util.ease.easeInQuad}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 6, to : 1, ease : fabric.util.ease.easeInQuad}))
+					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 0, to : 1, ease : fabric.util.ease.easeInQuad}))
 				return enterTransition;
 			},
 			remain : function(object, refObject){
-				var remainTransition =  new Transition()
+				var remainTransition = new Transition()
 					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 1, to : 1}))
 					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 1, to : 1}))
 					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 1, to : 1}))
 				return remainTransition;
 			},
 			leave : function(object, refObject){
-				var leaveTransition =  new Transition()
+				var leaveTransition = new Transition()
 					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 1, to : 0}))
 					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 1, to : 0}))
 					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 1, to : 0}))
@@ -96,9 +96,9 @@ define(function(require) {
 		'behindFrontWithTurn' : {
 			enter : function(object, refObject){
 				 var enterTransition = new Transition()
-					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 0, to : 1}))
-					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 0, to : 1}))
-					.addPropertyTransition(new PropertyTransition({name : 'angle',  from : 0, to : 360}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 0, to : 1, ease : fabric.util.ease.easeInQuad}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 0, to : 1, ease : fabric.util.ease.easeInQuad}))
+					.addPropertyTransition(new PropertyTransition({name : 'angle',  from : 0, to : 360, ease : fabric.util.ease.easeInQuad}))
 				return enterTransition;
 			},
 			remain : function(object, refObject){
@@ -120,8 +120,8 @@ define(function(require) {
 		'behindFront' : {
 			enter : function(object, refObject){
 				 var enterTransition = new Transition()
-					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 0, to : 1}))
-					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 0, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 0, to : 1, ease : fabric.util.ease.easeInQuad}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 0, to : 1, ease : fabric.util.ease.easeInQuad}))
 				return enterTransition;
 			},
 			remain : function(object, refObject){
@@ -143,7 +143,7 @@ define(function(require) {
 				var startTop = (object.top - (refObject.height/2 + (refObject.height/2)*.2))
 				var endTop  = (object.top + ((refObject.height/2) + (refObject.height/2)*.2))
 				var enterTransition = new Transition()
-					.addPropertyTransition(new PropertyTransition({name : 'top',  from : startTop, to : object.top}))
+					.addPropertyTransition(new PropertyTransition({name : 'top',  from : startTop, to : object.top, ease : fabric.util.ease.easeInQuad}))
 				return enterTransition;
 			},
 			remain : function(object, refObject){
@@ -158,6 +158,52 @@ define(function(require) {
 				var endTop  = (object.top + ((refObject.height/2) + (refObject.height/2)*.2))
 				var leaveTransition = new Transition()
 					.addPropertyTransition(new PropertyTransition({name : 'top', from : object.top, to : endTop}))
+				return leaveTransition;
+			}
+		},
+		'bottomTop' : {
+			enter : function(object, refObject){
+				var startTop = (object.top + (refObject.height/2 + (refObject.height/2)*.2))
+				var endTop  = (object.top - ((refObject.height/2) + (refObject.height/2)*.2))
+				var enterTransition = new Transition()
+					.addPropertyTransition(new PropertyTransition({name : 'top',  from : startTop, to : object.top, ease : fabric.util.ease.easeInQuad}))
+				return enterTransition;
+			},
+			remain : function(object, refObject){
+				var startTop = (object.top + (refObject.height/2 + (refObject.height/2)*.2))
+				var endTop  = (object.top - ((refObject.height/2) + (refObject.height/2)*.2))
+				var remainTransition = new Transition()
+					.addPropertyTransition(new PropertyTransition({name : 'top', from : object.top, to : object.top}))
+				return remainTransition;
+			},
+			leave : function(object, refObject){
+				var startTop = (object.top + (refObject.height/2 + (refObject.height/2)*.2))
+				var endTop  = (object.top - ((refObject.height/2) + (refObject.height/2)*.2))
+				var leaveTransition = new Transition()
+					.addPropertyTransition(new PropertyTransition({name : 'top', from : object.top, to : endTop}))
+				return leaveTransition;
+			}
+		},
+		'leftRight' : {
+			enter : function(object, refObject){
+				var startLeft = (object.left - (refObject.width/2 + (refObject.width/2)*.2))
+				var endLeft  = (object.left + ((refObject.left/2) + (refObject.left/2)*.2))
+				var enterTransition = new Transition()
+					.addPropertyTransition(new PropertyTransition({name : 'left',  from : startLeft, to : object.left, ease : fabric.util.ease.easeInQuad}))
+				return enterTransition;
+			},
+			remain : function(object, refObject){
+				var startLeft = (object.left - (refObject.width/2 + (refObject.width/2)*.2))
+				var endLeft  = (object.left + ((refObject.left/2) + (refObject.left/2)*.2))
+				var remainTransition = new Transition()
+					.addPropertyTransition(new PropertyTransition({name : 'left', from : object.left, to : object.left}))
+				return remainTransition;
+			},
+			leave : function(object, refObject){
+				var startLeft = (object.left - (refObject.width/2 + (refObject.width/2)*.2))
+				var endLeft  = (object.left + ((refObject.left/2) + (refObject.left/2)*.2))
+				var leaveTransition = new Transition()
+					.addPropertyTransition(new PropertyTransition({name : 'left', from : object.left, to : endLeft}))
 				return leaveTransition;
 			}
 		}

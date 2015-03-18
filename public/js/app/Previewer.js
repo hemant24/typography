@@ -43,7 +43,7 @@ define(function(require) {
 		return {background : canvas.getBackgroundColor() , objects : initialStateObjects}
 	}
 	
-	Previewer['preview'] = function(canvasJSON, playLength, quality){
+	Previewer['preview'] = function(canvasJSON, playLength, quality, callBack){
 		if(!quality){
 			quality = 1
 		}
@@ -59,6 +59,7 @@ define(function(require) {
 		}
 		var animator = new Animator(previewCanvas, animateFor, playLength);
 		//animator.play()
+		console.log(callBack);
 		previewCanvas.loadFromJSON(canvasJSON, function(){
 			//console.log('called loadFromJSON complete')
 			for(var i in animator._objs){
@@ -72,7 +73,8 @@ define(function(require) {
 			//console.log('animator', animator)
 			//console.log('objects in cnavas' , previewCanvas.getObjects())
 			//previewCanvas.setZoom(2)
-			animator.play()
+			//animator.play()
+			callBack(animator);
 			//animator.seek( $("#seekTime").val())
 			//previewCanvas.renderAll();
 			//startAnimation();
