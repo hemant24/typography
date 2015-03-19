@@ -10,8 +10,7 @@ define(function(require) {
 	var SrtObjectGenerator = function(params){
 		this.audioTrack = params.audioTrack
 	}
-	var allFontFamily = ["Comic Sans MS", "Times New Roman", "Impact", "Trebuchet MS", "Verdana"]
-	var allFontSize = [120, 40, 80 ]
+
 	SrtObjectGenerator.prototype.generate = function(){
 		var audioRegions = srtParser.fromSrt($("#lyrics").val(), true)
 		if(this.audioTrack){
@@ -52,7 +51,7 @@ define(function(require) {
 					startTime : wordDurationMap.start,
 					endTime : endTime//wordDurationMap.end
 				})
-				setRandomFont(text);
+				this.audioTrack.setRandomFont(text);
 				previousObjectList.push(text);
 				GroupAnimationPalete.topBottom({
 					object : text,
@@ -76,25 +75,12 @@ define(function(require) {
 					startTime : wordDurationMap.start,
 					endTime : wordDurationMap.end
 				})
-				setRandomFont(text);
+				this.audioTrack.setRandomFont(text);
 				AnimationPalete.addTransitionToObject(AnimationPalete.getRandomTransition(), text, wordDurationMap.start, wordDurationMap.end, this.audioTrack.animator.getCamera());
 			}
 		}
 	}
-	var setRandomFont = function(text){
-		text.set('fontSize', allFontSize[Math.floor(Math.random() * (allFontSize.length))])
-		text.set('fontFamily', allFontFamily[Math.floor(Math.random() * (allFontFamily.length))])
-	}
 	
-	var setProperFont = function(text, size){
-		text.set('fontSize', size)
-		var width = text.get('width');
-		if(width >= 290){
-			setProperFont(text, size - 1)
-		}else{
-			// do nothing
-		}
-	}
 	
 	var getRandomPalete = function(){
 		var index = Math.floor(Math.random() * 4);

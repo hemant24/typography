@@ -21,7 +21,8 @@ define(function(require) {
 	var Properties = require('app/Properties');
 	var GroupAnimationPalete = require('./GroupAnimationPalete');
 	var WordGroupUtil =  require('./WordGroupUtil');
-	
+	var allFontFamily = ["Comic Sans MS", "Times New Roman", "Impact", "Trebuchet MS", "Verdana"]
+	var allFontSize = [120, 40, 80 ]
 	var AudioTrack = function(file, animator){
 		
 		this.file = file;
@@ -90,8 +91,7 @@ define(function(require) {
 		var noOfWords = 4;
 		var worldsToAdd = 0;
 		var wordList = [];
-		var lyrics = $.trim($("#lyrics").val());
-		lyrics = lyrics.replace(/[ \t\r\n]+/g," ");
+		var lyrics = _getLyricsList();
 		if($.trim(lyrics).length == 0){
 			wordList = [];
 		}else{
@@ -106,7 +106,11 @@ define(function(require) {
 		}
 		_addWords.call(audioTrack, appendTo, wordList, worldsToAdd, region);
 	}
-	
+	var _getLyricsList = function(){
+		var lyrics = $.trim($("#lyrics").val());
+		lyrics = lyrics.replace(/[ \t\r\n]+/g," ");
+		return lyrics
+	}
 	var _addWordGroup = function(appendTo, line, region){
 		var button = $('<button class="lyricsText">'+ line +'</button>')
 		button.click(function(audioTrack){
@@ -122,6 +126,7 @@ define(function(require) {
 									startTime : wordDurationMap.start,
 									endTime : endTime//wordDurationMap.end
 								})
+								audioTrack.setRandomFont.call(audioTrack, text);
 								previousObjectList.push(text);
 								GroupAnimationPalete.topBottom({
 									object : text,
@@ -159,6 +164,22 @@ define(function(require) {
 				}(this))
 				appendTo.append(button)
 			}
+	}
+	
+	AudioTrack.prototype.setRandomFont = function(text){
+		this.setProperFont.call(this, text, allFontSize[Math.floor(Math.random() * (allFontSize.length))])
+		text.set('fontFamily', allFontFamily[Math.floor(Math.random() * (allFontFamily.length))])
+	}
+	
+	AudioTrack.prototype.setProperFont = function(text, size){
+		console.log('called set properfont')
+		text.set('fontSize', size)
+		var width = text.get('width');
+		if(width >= 290){
+			this.setProperFont.call(this, text, size - 1)
+		}else{
+			// do nothing
+		}
 	}
 	
 	AudioTrack.prototype.addTextObjectToAnimator = function(params){
@@ -199,6 +220,7 @@ define(function(require) {
 			startTime : start,
 			endTime : end
 		})
+		this.setRandomFont(text);
 		AnimationPalete.addTransitionToObject(AnimationPalete.getRandomTransition(), text, start, end,  this.animator.getCamera());
 		//AnimationPalete.behindFrontWithTurn(text, start, end, this.animator.getCamera())
 		_removeTextFromLyricsText($(button).text());
@@ -206,17 +228,38 @@ define(function(require) {
 	}
 	
 	var _removeTextFromLyricsText = function(text){
-		var lyrics = $.trim($("#lyrics").val());
-		lyrics = lyrics.replace(/[ \t\r\n]+/g," ");
+		var lyrics = _getLyricsList();
 		var wordList = lyrics.split(" ");
 		wordList.splice(wordList.indexOf(text),1)
 		$("#lyrics").val(wordList.join(' ' ))
+	}
+	
+	var handleAddLyricsWord = function(mainDiv, region){
+		var appendTo = mainDiv.find('#textButton');
+		var lyrics = _getLyricsList();
+		lyrics = lyrics.split(" ");
+		var totalCurrentWords = mainDiv.find('.lyricsText').length
+		var wordToAdd = lyrics[totalCurrentWords]
+		if(wordToAdd){
+			var wordList = [wordToAdd]
+			var worldsToAdd = 1
+			_addWords.call(this, appendTo, wordList, worldsToAdd, region);
+		}
+	}
+	var handleRemoveLyricsWord = function(mainDiv, region){
+		mainDiv.find('.lyricsText:last').remove()
 	}
 	
 	var _bindEvents = function(){
 		this.wavesurfer.on('region-dblclick', function(region, e){
 			var dialogOption = {}
 			_addTextButtonsToDialog.call(this, $("#textSelection"), region)
+			$("#textSelection").find('#addLyricsWord').unbind('click').bind('click', function(){
+				handleAddLyricsWord.call(this, $("#textSelection"), region)
+			}.bind(this))
+			$("#textSelection").find('#removeLyricsWord').unbind('click').bind('click', function(){
+				handleRemoveLyricsWord.call(this, $("#textSelection"), region)
+			}.bind(this))
 			$("#textSelection").dialog({
 			buttons: [
 				
