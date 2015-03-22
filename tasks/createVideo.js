@@ -21,7 +21,7 @@ function startTask(){
 				'-vcodec': 'libx264',
 				//'-vcodec': 'mpeg4',
 				'-b' :  '1004M',
-				'-s' :  job.data.height + 'x' + job.data.width,
+				'-s' :  job.data.width + 'x' + job.data.height,
 				//'-crf' : '1', 
 			}
 		}

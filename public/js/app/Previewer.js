@@ -20,11 +20,12 @@ define(function(require) {
 		for(var i in animator._objs){
 			objectsToSerialize.push(animator._objs[i].toObject())
 		}
+		/*
 		canvas.getObjects().map(function(instance){
 			if(instance.get('type') == 'aCamera'){
 				objectsToSerialize.push(instance.toObject())
 			}
-		})
+		})*/
 		
 		return {background : canvas.backgroundColor , objects : objectsToSerialize}
 		
@@ -53,8 +54,10 @@ define(function(require) {
 		console.log('playLength is ' , playLength)
 		if(env == 'node'){
 			animateFor = 'server';
-			previewCanvas = fabric.createCanvasForNode(300 * quality, 300 * quality);
+			previewCanvas = fabric.createCanvasForNode(Animator.getCameraHeight() * quality, Animator.getCameraWidth() * quality);
 		}else{
+			$('#previewCanvas').attr('width', Animator.getCameraWidth())
+			$('#previewCanvas').attr('height', Animator.getCameraHeight())
 			previewCanvas = new fabric.Canvas('previewCanvas');
 		}
 		var animator = new Animator(previewCanvas, animateFor, playLength);

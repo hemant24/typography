@@ -16,11 +16,59 @@ define(function(require) {
 		el : "#editForm",
 		events: {
             "click .fromShowOnCanvas": "fromShowOnCanvas",
-			"click .addTransition" : "addTransition"
+			"click .addTransition" : "addTransition",
+			"click .removeObject" : "removeObject"
         },
 		bindings: {
 			"input.objectName": "value:name,events:['keyup']",
 			"select.frameOptions" : "options:frameDropDown"
+		},
+		removeObject : function(){
+			this.model.get('region').remove();
+			var index = this.animator._objs.indexOf(this.fabricObject);
+			var camera = this.animator.getCamera();
+			console.log(camera.get('transitionList'));
+			console.log(this.fabricObject.get('camerTransitions'));
+			var cameraTransition = camera.get('transitionList');
+			var cameraTransitionIndex = cameraTransition.indexOf(this.fabricObject.get('camerTransitions'))
+			var currentTransition = cameraTransition[cameraTransitionIndex]
+			var cameraPreviousTransition = cameraTransition[cameraTransitionIndex -1]
+			console.log('cameraPreviousTransition', cameraPreviousTransition);
+			var cameraNextTransition = cameraTransition[cameraTransitionIndex + 1]
+			if(currentTransition && cameraNextTransition){
+				var copyFromTransition = cameraNextTransition
+				var isFirstTransition = false
+				if(cameraPreviousTransition){
+					copyFromTransition = cameraPreviousTransition
+				}else{
+					isFirstTransition = true;
+				}
+				cameraNextTransition.get('propertyTransitions').each(function(propTransition){
+					console.log(propTransition);
+					copyFromTransition.get('propertyTransitions').each(function(propToGet){
+						if(propToGet.get('name') == propTransition.get('name')){
+							propTransition.set('from', propToGet.get('from'));
+							propTransition.set('to', propToGet.get('to'));
+							if(isFirstTransition && propToGet.get('name') == 'top'){
+								propTransition.set('from', 200);
+								propTransition.set('to', 200);
+							}
+							if(isFirstTransition && propToGet.get('name') == 'left'){
+								propTransition.set('from',300);
+								propTransition.set('to', 300);
+							}
+						}
+					})
+				})
+			}
+			console.log('object camera assocaition', this.fabricObject.get('camerTransitions'));
+			console.log('cameraTransition ' , cameraTransition);
+			console.log('cameraTransitionIndex ' , cameraTransitionIndex);
+			//cameraTransition = []
+			camera.get('transitionList').splice(cameraTransitionIndex, 1);
+			console.log('now camera transition is ', camera.get('transitionList'));
+			this.animator._objs.splice(index,1);
+			$("#dialog").dialog("close");
 		},
 		addTransition : function(){
 			var cid = this.$el.find('.frameOptions').val();
@@ -41,17 +89,21 @@ define(function(require) {
 		},
 		initialize : function(params){
 			this.model = params.model
+			console.log(' params.animator._objs ' , params.animator._objs)
+			console.log(' this.fabricObject ', params.fabricObject);
+			this.animator = params.animator
 			this.fabricObject = params.fabricObject
 			this.template = _.template(template);
+			
 			this.region = params.region;
 			var frameDropDown = []
 			var region = this.model.get('region')
 			var regionStartTime = region['start']
 			var regionEndTime = region['end']
-			
+			console.log('called transition view initilize', this.model);
 			this.model.get("transitionList").each(function(transition){
-				//console.log(transition)
-				//console.log(transition.get('cid'))
+				console.log(transition)
+				console.log(transition.get('cid'))
 				frameDropDown.push({label : 'Frame - ' + transition.get('from') + '-' + transition.get('to'), value : transition['cid']})
 			})
 			this.model.set('frameDropDown' , frameDropDown)

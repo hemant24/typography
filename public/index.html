@@ -50,10 +50,21 @@
 
 <body>
 <div class="ui-layout-north ui-widget-content" style="display: none;">
+	<div style="float:left">
 	<input type='button' id='add' value='Add'></input>
 	<input type='button' id='preview' value='Preview'></input>
 	<input type='button' id='playPause' value='Play/Pause'></input>
 	<input id="fileupload" type="file" name="files[]" data-url="upload/uploads/" multiple style="display: inline-block;">
+	</div>
+	
+	<div style="float:right">
+		
+		<select id='projectList'>
+		</select>
+		<input type='button' id='loadProject' value="Load Project"></input>
+		<input type='text' id='projectName' value="Default Project"></input>
+		<input type='button' id='saveProject' value="Save Project"></input>
+	</div>
 </div>
 
 <!-- allowOverflow auto-attached by option: west__showOverflowOnHover = true -->
@@ -116,8 +127,8 @@
 			  <div class="form-group">
 				  <label>Resolution : </label>
 				  <select type="text" id="resolution">
-					<option value=1> 300x300 </option>
-					<option value=2> 600x600 </option>
+					<option value=1> 426x240 </option>
+					<option value=2> 640x360 </option>
 				  </select>
 			  </div>
 			  <div class="form-group">

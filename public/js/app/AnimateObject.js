@@ -8,6 +8,7 @@ define(function(require) {
 	var AnimateObjectModel = require('./NodeAnimateObjectModel')
 	return {
 		initialize: function() {
+			console.log('initizli', arguments)
 			var text="defalt" ,options={}
 			if(arguments.length == 2){
 				text = arguments[0]
@@ -30,6 +31,7 @@ define(function(require) {
 			this.corerSize = 6;
 			this.transparentCorners = true;
 			this.camerTransitions = null;
+			this.cameraTransitionId = options.cameraTransitionId || null;
 			this.supportedProperties = {
 				top : '',
 				left : '',
@@ -87,7 +89,8 @@ define(function(require) {
 				this.set('top', this.startState['top']);
 			}
 			var result =  fabric.util.object.extend(this.callSuper('toObject'), {
-			  transitionList: this.get('transitionList')
+			  transitionList: this.get('transitionList'),
+			  cameraTransitionId : this.get('cameraTransitionId')
 			});
 			return result
 		},
@@ -210,12 +213,14 @@ define(function(require) {
 			this.listOfStartedTransitions = []
 		},
 		getKeyframeByTime : function(time){
+			//console.log('this.transitionList', this.transitionList);
 			for(var i in this.transitionList){
 				var transition = this.transitionList[i]
 				if(transition.toJSON){
 					transition = transition.toJSON()
 				}
 				if(time >= transition['from'] && time <= transition['to']){
+					console.log('found transition', transition);
 					return transition;
 				}
 			}

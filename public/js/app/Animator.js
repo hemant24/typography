@@ -7,7 +7,8 @@ define(function(require) {
 	var Sequence = require('./Sequence')
 	var Properties = require('./Properties')
 	//var async = require('async')
-	
+	var cameraH = 240;
+	var cameraW = 426;
 	var Animator = function(canvas, animateFor, playLength){
 		this._objs = [];
 //		console.log(canvas)
@@ -16,16 +17,46 @@ define(function(require) {
 		//this.isPreview = isPreview,
 		this.animateFor = animateFor || 'drawing';
 		this.camera = null;
+		this.cameraHeight = cameraH;
+		this.cameraWidth = cameraW;
 		this.fps = 25;
 	}
 	var now = null;
 	var frameCount = 0;
 	
+	Animator['getCameraHeight'] = function(){
+		return cameraH
+	}
+	
+	Animator['getCameraWidth'] = function(){
+		return cameraW
+	}
 	
 	Animator.prototype.add = function(obj){
 		obj.canvas = this.canvas;
 		this._objs.push(obj)
 		//this.canvas.add(obj)
+	}
+	Animator.prototype.initializeCamera = function(camera){
+		camera.lockScalingX = true;
+		camera.lockScalingY = true;
+		camera.lockRotation = true;
+		camera.perPixelTargetFind = true;
+		camera.set('height',this.cameraHeight);
+		camera.set('width',this.cameraWidth);
+		camera.saveToStartState();
+		//this.canvas.add(obj)
+	}
+	Animator.prototype.addGridLines = function(color){
+		console.log('called add grid lines ', color)
+		this.canvas.add(new fabric.Line([0, -1000, 0, 1000], {
+			stroke: color,
+			selectable  : false
+		}));
+		this.canvas.add(new fabric.Line([-1000,0, 1000, 0], {
+			stroke: color,
+			selectable  : false
+		}));
 	}
 	
 	Animator.prototype.play = function(){
@@ -66,7 +97,7 @@ define(function(require) {
 			//console.log('type is ' + obj.get('type'))
 			if(obj.get('type') == 'aCamera'){
 				this.camera = obj;
-				return obj;
+				return this.camera;
 			}
 		}
 	}

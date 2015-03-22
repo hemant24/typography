@@ -17,6 +17,7 @@
     "jade": "~1.9.2",
     "jquery-file-upload-middleware": "^0.1.7",
     "kue": "^0.8.11",
+    "mongodb": "^1.4.35",
     "morgan": "~1.5.1",
     "node-uuid": "^1.4.2",
     "npm": "^2.6.1",

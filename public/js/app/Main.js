@@ -22,6 +22,7 @@ define(function(require) {
 		var Animator = require('app/Animator')
 		var DrawingArea = require('app/DrawingArea')
 		var Previewer = require('app/Previewer')
+		var Project = require('app/Project')
 		
 		var Transition = require('./Transition');
 		var PropertyTransition = require('./PropertyTransition');
@@ -33,7 +34,7 @@ define(function(require) {
 		$("#add").click(function(){
 			
 		})
-
+		
 	
 		/*
 		video.on('welcome', function(msg){
@@ -93,15 +94,7 @@ define(function(require) {
 		//animator.play()
 		//console.log(aText.getKeyframeByTime2(200))
 		
-		canvas.add(new fabric.Line([0, -1000, 0, 1000], {
-			stroke: gridAndCameraColor,
-			selectable  : false
-		}));
-		gridAndCameraColor
-		canvas.add(new fabric.Line([-1000,0, 1000, 0], {
-			stroke: gridAndCameraColor,
-			selectable  : false
-		}));
+	
 
 		$('#fileupload').fileupload({
 			dataType: 'json',
@@ -117,17 +110,131 @@ define(function(require) {
 			done: function (e, data) {
 			}
 		});		
+		$("#saveProject").click(function(){
+			var project = new Project();
+			console.log('going to save', project);
+			project.save({animator : animator, 
+							canvas : canvas,
+							projectName : $("#projectName").val()});
+
+		})
+		
+		$("#loadProject").click(function(){
+			var projectId = $("#projectList option:selected").val()
+			var projectName = $("#projectList option:selected").text()
+			Project.loadProject(projectId, function(project){
+				var oldObjects = []
+				canvas.getObjects().map(function(instance){
+					oldObjects.push(instance);
+				});
+				var oldObjectsLength = oldObjects.length 
+				for(var i = 0 ; i < oldObjectsLength; i++){
+					var instance = oldObjects[i];
+					canvas.remove(instance);
+				}
+				
+				animator._objs = [];
+				animator._objs.length = 0;
+			
+				var project = project.project;
+				
+				//console.log('project to load is ' , project);
+				
+				canvas.loadFromJSON(project.fabricCanvas, function(){
+					var objectCameraTransitionMap = {}
+					var cameraObject = null
+					for(var i in animator._objs){
+						var objectToRemove = animator._objs[i];
+						console.log('objectToRemove', objectToRemove);
+						if(objectToRemove.get('type') != 'aCamera'){
+							canvas.remove(objectToRemove);
+							var transitionList = objectToRemove.get('transitionList');
+							objectToRemove.set('transitionList', []);
+							if(objectToRemove.get('cameraTransitionId') != null){
+								objectCameraTransitionMap[objectToRemove.get('cameraTransitionId')] = objectToRemove
+							}
+							for(var t in transitionList){
+								var transition = transitionList[t];
+								//console.log('before transition', transition)
+								var trans = new Transition(transition)
+								objectToRemove.get('transitionList').push(trans);
+								objectToRemove.get('animateObjectModel').get("transitionList").add(trans)
+								//console.log('now objecttoremove', objectToRemove);
+							}
+							transitionList = objectToRemove.get('transitionList');
+							var firstTransition = transitionList[0]
+							console.log('firstTransition ', firstTransition)
+							var lastTransition = transitionList[transitionList.length - 1]
+							var startTime = firstTransition.get('from');
+							var endTime = lastTransition.get('to');
+							console.log('add region')
+							console.log('startTime '  + startTime)
+							console.log('endTime '  + endTime)
+							var frameRegion = audioTrack.addFramesRegion({
+											start : startTime,
+											end : endTime,
+											color : "red",
+											data : objectToRemove
+										})
+							
+							//console.log(" objectToRemove.get('animateObjectModel') " , objectToRemove.get('animateObjectModel'));
+							objectToRemove.get('animateObjectModel').set('region', frameRegion);
+							console.log(objectToRemove);
+						}else{
+							cameraObject = objectToRemove;
+
+						}
+					}
+					if(cameraObject){
+						var transitionList = cameraObject.get('transitionList');
+						cameraObject.set('transitionList', []);
+						for(var t in transitionList){
+							var transition = transitionList[t];
+							//console.log('before transition', transition)
+							var trans = new Transition(transition)
+							cameraObject.get('transitionList').push(trans);
+							cameraObject.get('animateObjectModel').get("transitionList").add(trans)
+							console.log("trans.get('transitionId')", trans.get('transitionId'))
+							console.log("objectCameraTransitionMap[trans.get('transitionId')] " , objectCameraTransitionMap[trans.get('transitionId')])
+							if(objectCameraTransitionMap[trans.get('transitionId')]){
+								var obj = objectCameraTransitionMap[trans.get('transitionId')]
+								obj.set('camerTransitions', trans);
+							}
+							//console.log('now objecttoremove', objectToRemove);
+						}
+						animator.initializeCamera(cameraObject);
+					}
+					console.log('objectCameraTransitionMap', objectCameraTransitionMap);
+					animator.addGridLines(gridAndCameraColor);
+				}, function(o, object){
+					animator.add(object)
+					//console.log('removed :' , previewCanvas.remove(object))
+				} )
+				
+			})
+		})
+		
+					
+		Project.getAllProject(function(projectList){
+			console.log('got all projects ' , projectList)
+			for(var i in projectList.projects){
+				var proj = projectList.projects[i]
+				$('<option>').val(proj['_id']).text(proj['projectName']).appendTo('#projectList');
+			}
+		});
 		
 		$("#createVideo").click(function(){
 			console.log('current fps is ' , parseInt($('#fps').val()))
+			
+			console.log('$("#resolution").val()' , $("#resolution").val());
 			$.ajax({
 				url : '/video/',
 				contentType: 'application/json', 
 				data : JSON.stringify({
 							fps: parseInt($('#fps').val()) , 
 							quality : parseInt($("#quality").val()),
-							height : $("#resolution").val() == 1 ? 300 : 600 ,
-							width : $("#resolution").val() == 1 ? 300 : 600,
+							height : $("#resolution").val() == 1 ? 240 : 360 ,
+							width : $("#resolution").val() == 1 ? 426 : 640,
 							playLength : parseInt($('#playlength').val()), 
 							fabricCanvas : Previewer.animatorToJSON(animator, canvas)}),
 				type  : 'post',
@@ -163,20 +270,12 @@ animator.play()*/
 		  fill: null,
 		  stroke: gridAndCameraColor,
 		  strokeWidth: 3,
-		  width: 300,
-		  height: 300,
 		  perPixelTargetFind  : true
-		})//.keyframe(800, 900, {left : 170});
-		camera.lockScalingX = true;
-		camera.lockScalingY = true;
-		camera.lockRotation = true;
-		camera.saveToStartState();
-		camera.on('selected' , function(){
-					console.log(this)
-				})
+		})
 		canvas.add(camera)
 		animator.add(camera)
-		//animator.play();
+		animator.initializeCamera(camera)
+		animator.addGridLines(gridAndCameraColor);
 		
 		$("#seekBtn").click(function(){
 			console.log("seeking to " ,  $("#seekTime").val())

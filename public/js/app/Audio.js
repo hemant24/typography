@@ -22,7 +22,7 @@ define(function(require) {
 	var GroupAnimationPalete = require('./GroupAnimationPalete');
 	var WordGroupUtil =  require('./WordGroupUtil');
 	var allFontFamily = ["Comic Sans MS", "Times New Roman", "Impact", "Trebuchet MS", "Verdana"]
-	var allFontSize = [120, 40, 80 ]
+	var allFontSize = [100, 40, 80 ]
 	var AudioTrack = function(file, animator){
 		
 		this.file = file;
@@ -318,7 +318,9 @@ define(function(require) {
 			transitionItemView.render()
 			*/
 			
-			var transitionView = new TransitionView( {model : animatedModel, fabricObject : region.data})
+			var transitionView = new TransitionView( {	model : animatedModel, 
+														fabricObject : region.data, 
+														animator : this.animator})
 			//transitionView.render()
 			/*var animateObjectView = new AnimateObjectView( {model : animatedModel, fabricObject : region.data})
 			animateObjectView.render()*/

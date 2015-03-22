@@ -11,7 +11,7 @@ function startTask(){
 	jobs.process('createFrames', function(job, done){
 		console.log('in directory', job.data.dir,' from frame' , job.data.from,'to frame' , job.data.to,  'will proce sdss data' , job.data.payload, 'totalWorker ' , job.data.totalWorker);
   
-		var canvas = fabric.createCanvasForNode(300 * job.data.payload['quality'], 300 * job.data.payload['quality']);
+		var canvas = fabric.createCanvasForNode(job.data.payload['width'] * job.data.payload['quality'], job.data.payload['height'] * job.data.payload['quality']);
 		var animator = new Animator(canvas, 'server', job.data.payload['playLength']);
 		canvas.loadFromJSON(job.data.payload['fabricCanvas'], 
 		function(){

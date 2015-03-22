@@ -48,6 +48,10 @@ define(function(require) {
 		}
 		//console.log('setting ', objectParams.object ,' with camera transition ' , cameraTransition)
 		objectParams.object.set('camerTransitions', cameraTransition);
+		if(cameraTransition){
+			objectParams.object.set('cameraTransitionId', cameraTransition.get('transitionId'));
+		}
+		
 		//console.log('adding animation pallete', objectParams.object, 'start time is ' ,objectParams.startTime , 'end time is ',  groupParams.endTime)
 		AnimationPalete.addTransitionToObject(animationParams.transitionName, objectParams.object, objectParams.startTime, groupParams.endTime, cameraParams.camera, aTiming);
 		if(groupParams.currentObjectIndex == groupParams.totalObject){

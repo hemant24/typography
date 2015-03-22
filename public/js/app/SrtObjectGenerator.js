@@ -45,7 +45,7 @@ define(function(require) {
 			
 				
 			//console.log('added text is ' , text)
-			if(true || (paleteIndex > 1 && paleteIndex <= 4)){
+			if(paleteIndex > 1 && paleteIndex <= 4){
 				var text = this.audioTrack.addTextObjectToAnimator({
 					text : wordDurationMap.word,
 					startTime : wordDurationMap.start,

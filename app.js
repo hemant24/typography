@@ -8,6 +8,7 @@ var kue = require('kue')
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var audioUploadHandler = require('./routes/audio');
+var projects = require('./routes/projects');
 var http = require('http');
 var upload = require('jquery-file-upload-middleware');
 var app = express();
@@ -40,6 +41,7 @@ app.use(kue.app);
 app.use('/', routes);
 app.use('/video', users);
 app.use('/upload', audioUploadHandler);
+app.use('/project', projects);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
