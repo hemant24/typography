@@ -9,6 +9,8 @@ define(function(require) {
 	var PropertyTransition = require('./../PropertyTransition');
 	var TransitionItemView = require('./TransitionItemView')
 	var WaveSurfer = require('wavesurfer');
+	var AnimationPalete = require('./../AnimationPalete');
+	var fabric = require('fabric')
 	require('drawer');
 	require('wavesurfer.transition.region');
 	
@@ -17,23 +19,37 @@ define(function(require) {
 		events: {
             "click .fromShowOnCanvas": "fromShowOnCanvas",
 			"click .addTransition" : "addTransition",
+			"click .changeTransition" : "changeTransition",
 			"click .removeObject" : "removeObject"
         },
 		bindings: {
 			"input.objectName": "value:name,events:['keyup']",
-			"select.frameOptions" : "options:frameDropDown"
+			"select.frameOptions" : "options:frameDropDown",
+			"select.allTransitionsOptions" : "options:allTransitionsDropDown"
+		},
+		changeTransition : function(){
+			var selectedPalette = this.$el.find('.allTransitionsOptions').val();
+			var region = this.model.get('region');
+			this.fabricObject.set('transitionList', [])
+			var refObj = this.animator.getCamera();
+			if(this.fabricObject.get('camerTransitions')){
+				var dummyCamera = new fabric.ACamera({
+					  top: this.animator.getCamera().get('top'),
+					  left : this.animator.getCamera().get('left')
+					})
+				dummyCamera.set('transitionList', [this.fabricObject.get('camerTransitions')]);
+				refObj = dummyCamera;
+			}
+			AnimationPalete.addTransitionToObject(selectedPalette, this.fabricObject, region.start, region.end, refObj);
 		},
 		removeObject : function(){
 			this.model.get('region').remove();
 			var index = this.animator._objs.indexOf(this.fabricObject);
 			var camera = this.animator.getCamera();
-			console.log(camera.get('transitionList'));
-			console.log(this.fabricObject.get('camerTransitions'));
 			var cameraTransition = camera.get('transitionList');
 			var cameraTransitionIndex = cameraTransition.indexOf(this.fabricObject.get('camerTransitions'))
 			var currentTransition = cameraTransition[cameraTransitionIndex]
 			var cameraPreviousTransition = cameraTransition[cameraTransitionIndex -1]
-			console.log('cameraPreviousTransition', cameraPreviousTransition);
 			var cameraNextTransition = cameraTransition[cameraTransitionIndex + 1]
 			if(currentTransition && cameraNextTransition){
 				var copyFromTransition = cameraNextTransition
@@ -97,6 +113,7 @@ define(function(require) {
 			
 			this.region = params.region;
 			var frameDropDown = []
+			var allTransitions = []
 			var region = this.model.get('region')
 			var regionStartTime = region['start']
 			var regionEndTime = region['end']
@@ -107,6 +124,12 @@ define(function(require) {
 				frameDropDown.push({label : 'Frame - ' + transition.get('from') + '-' + transition.get('to'), value : transition['cid']})
 			})
 			this.model.set('frameDropDown' , frameDropDown)
+			var allSupportedTransitions = AnimationPalete.getAllTransitions()
+			for(var idx in allSupportedTransitions){
+				allTransitions.push({label : idx, value : idx})
+			}
+			this.model.set('allTransitionsDropDown' , allTransitions)
+			console.log(allTransitions);
 			//console.log(this.template())
 			this.$el.html(this.template({model : {}}));
 			 /*

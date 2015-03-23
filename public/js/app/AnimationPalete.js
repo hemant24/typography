@@ -12,6 +12,7 @@ define(function(require) {
 		var transitionList = refObject.get('transitionList')
 		var lastKnownX = refObject.get('left');
 		var lastKnowY = refObject.get('top');
+		console.log('seting x y of obj', transitionList);
 		if(transitionList && transitionList.length && transitionList.length > 0){
 			var lastTransition = transitionList[transitionList.length - 1];
 			lastTransition.get('propertyTransitions').each(function(propTrans){
@@ -207,6 +208,10 @@ define(function(require) {
 				return leaveTransition;
 			}
 		}
+	}
+	
+	AnimationPalete.getAllTransitions = function(){
+		return allTransitions;
 	}
 	
 	AnimationPalete.getRandomTransition = function(){

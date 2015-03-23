@@ -24,10 +24,14 @@ router.post('/', function(req, res, next) {
 });
 
 router.get('/', function(req, res, next) {
+	try{
 	var projectsCollection = db.collection('projects');
 	projectsCollection.find().toArray(function(err, items) {
 		res.send({projects : items});
 	});
+	}catch(e){
+		console.log(e)
+	}
 	
 });
 
