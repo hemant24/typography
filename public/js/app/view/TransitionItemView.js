@@ -26,52 +26,55 @@ define(function(require) {
 			"input.index" : "value:integer(index)"
 		 },
 		changeTransition : function(){
-		var selectedPalette = this.$el.find('.allTransitionsOptions').val();
-		var allSupportedTransitions = AnimationPalete.getAllTransitions()
-		var toApplyTransition = allSupportedTransitions[selectedPalette]
-		if(toApplyTransition){
-			var refObj = this.animator.getCamera();
-			if(this.fabricObject.get('camerTransitions')){
-				var dummyCamera = new fabric.ACamera({
-					  top: this.animator.getCamera().get('top'),
-					  left : this.animator.getCamera().get('left')
-					})
-				dummyCamera.set('transitionList', [this.fabricObject.get('camerTransitions')]);
-				refObj = dummyCamera;
-			}
-			
-			var initialTransition = null
-			toApplyTransition = toApplyTransition(this.fabricObject, refObj);
-			var currentTransition = this.fabricObject.get('transitionList')[this.model.get('index')]
-			var previousTransition = this.fabricObject.get('transitionList')[parseInt(this.model.get('index')) - 1]
-			if(previousTransition){
-				initialTransition = previousTransition
-			}else{
-				initialTransition = new Transition()
-				currentTransition.get("propertyTransitions").each(function(propertyTransition){
-					var propertyName = propertyTransition.get('name');
-					initialTransition.addPropertyTransition(new PropertyTransition({name : propertyName,  from : this.fabricObject.get(propertyName), to :  this.fabricObject.get(propertyName), ease : fabric.util.ease.easeInQuad}))
-				}.bind(this))
-			}
-			if(initialTransition){
-				currentTransition.get("propertyTransitions").each(function(propertyTransition){
-					initialTransition.get("propertyTransitions").each(function(copyFromPropertyTransition){
-						if(copyFromPropertyTransition.get('name') == propertyTransition.get('name')){
-							propertyTransition.set('from' , copyFromPropertyTransition.get('from'))
-							propertyTransition.set('to' , copyFromPropertyTransition.get('to'))
-						}
-					})
-				})
+			var selectedPalette = this.$el.find('.allTransitionsOptions').val();
+			var allSupportedTransitions = AnimationPalete.getAllTransitions()
+			var toApplyTransition = allSupportedTransitions[selectedPalette]
+			if(toApplyTransition){
+				var refObj = this.animator.getCamera();
+				if(this.fabricObject.get('camerTransitions')){
+					var dummyCamera = new fabric.ACamera({
+						  top: this.animator.getCamera().get('top'),
+						  left : this.animator.getCamera().get('left')
+						})
+					dummyCamera.set('transitionList', [this.fabricObject.get('camerTransitions')]);
+					refObj = dummyCamera;
+				}
 				
-				toApplyTransition.get("propertyTransitions").each(function(propertyTransition){
-					currentTransition.get("propertyTransitions").each(function(copyToPropertyTransition){
-						if(copyToPropertyTransition.get('name') == propertyTransition.get('name')){
-							copyToPropertyTransition.set('from', propertyTransition.get('from'))
-							copyToPropertyTransition.set('to', propertyTransition.get('to'))
-						}
+				var initialTransition = null
+				console.log('current object ', this.fabricObject);
+				var currentObjectLocation = new fabric.AText('dummy', {left : this.fabricObject.get('left'), top : this.fabricObject.get('top')})
+				console.log('currentObjectLocation ', currentObjectLocation);
+				toApplyTransition = toApplyTransition(this.fabricObject, currentObjectLocation);
+				var currentTransition = this.fabricObject.get('transitionList')[this.model.get('index')]
+				var previousTransition = this.fabricObject.get('transitionList')[parseInt(this.model.get('index')) - 1]
+				if(previousTransition){
+					initialTransition = previousTransition
+				}else{
+					initialTransition = new Transition()
+					currentTransition.get("propertyTransitions").each(function(propertyTransition){
+						var propertyName = propertyTransition.get('name');
+						initialTransition.addPropertyTransition(new PropertyTransition({name : propertyName,  from : this.fabricObject.get(propertyName), to :  this.fabricObject.get(propertyName), ease : fabric.util.ease.easeInQuad}))
+					}.bind(this))
+				}
+				if(initialTransition){
+					currentTransition.get("propertyTransitions").each(function(propertyTransition){
+						initialTransition.get("propertyTransitions").each(function(copyFromPropertyTransition){
+							if(copyFromPropertyTransition.get('name') == propertyTransition.get('name')){
+								propertyTransition.set('from' , copyFromPropertyTransition.get('from'))
+								propertyTransition.set('to' , copyFromPropertyTransition.get('to'))
+							}
+						})
 					})
-				})
-			}
+					
+					toApplyTransition.get("propertyTransitions").each(function(propertyTransition){
+						currentTransition.get("propertyTransitions").each(function(copyToPropertyTransition){
+							if(copyToPropertyTransition.get('name') == propertyTransition.get('name')){
+								copyToPropertyTransition.set('from', propertyTransition.get('from'))
+								copyToPropertyTransition.set('to', propertyTransition.get('to'))
+							}
+						})
+					})
+				}
 		}
 		
 		/*

@@ -18,11 +18,93 @@ define(function(require) {
 		events: {
             "click .fromShowOnCanvas": "fromShowOnCanvas",
 			"click .addTransition" : "addTransition",
-			"click .removeObject" : "removeObject"
+			"click .removeObject" : "removeObject",
+			"click .updateUsingCurrentObj" : "updateTransitionObj",
+			"click .updateUsingCurrentCam" : "updateTransitionCam"
         },
 		bindings: {
 			"input.objectName": "value:name,events:['keyup']",
+			"input.fontSize": "value:fontSize,events:['keyup']",
+			"input.color": "value:color,events:['keyup']",
+			"input.fontFamily": "value:fontFamily,events:['keyup']",
 			"select.frameOptions" : "options:frameDropDown"
+		},
+		updateTransitionObj : function(){
+			this.updateTransitionRefObj.call(this, this.fabricObject)
+		}, 
+		updateTransitionCam : function(){
+			this.updateTransitionRefObj.call(this, this.animator.getCamera())
+		},
+		updateTransitionRefObj : function(refObj){
+			var currentTime = this.audioTrack.wavesurfer.getCurrentTime()*1000
+			var currentTransition = this.fabricObject.getKeyframeByTime(currentTime)
+			var leftPropertyTransition = null;
+			
+			var topPropretyTransition = null;
+			
+			for(var pt in currentTransition['propertyTransitions']){
+				var propTransition = currentTransition['propertyTransitions'][pt]
+				if(propTransition['name'] == 'left'){
+					leftPropertyTransition = propTransition
+				}
+				
+				if(propTransition['name'] == 'top'){
+					topPropretyTransition = propTransition
+				}
+			}
+			var easeFn = function(t, b, c, d) {return -c * Math.cos(t / d * (Math.PI / 2)) + c + b;}
+			
+			if(topPropretyTransition.easeFn != null && $.trim(topPropretyTransition.easeFn).length != 0){
+				easeFn = eval('fabric.util.ease.' + topPropretyTransition.easeFn)
+			}
+					
+			console.log('topPropretyTransition', topPropretyTransition)
+			console.log('leftPropertyTransition', leftPropertyTransition)
+			console.log( 'seekAt' , (currentTime - currentTransition['from'] ), 
+				'from ' , parseFloat(topPropretyTransition['from']), 
+				'byValue ' , parseFloat(topPropretyTransition['to']) - parseFloat(topPropretyTransition['from']),
+				'duration ' , currentTransition['from'] - currentTransition['to'])
+			var predictedTopValue = easeFn(currentTime - currentTransition['from'], parseFloat(topPropretyTransition['from']),  parseFloat(topPropretyTransition['to']) -parseFloat(topPropretyTransition['from']) ,  currentTransition['from'] - currentTransition['to']);
+			
+			var predictedLeftValue = easeFn(currentTime - currentTransition['from'], parseFloat(leftPropertyTransition['from']),  parseFloat(leftPropertyTransition['to']) -parseFloat(leftPropertyTransition['from']) ,  currentTransition['from'] - currentTransition['to']);
+			
+			console.log('predited top' , predictedTopValue);
+			console.log('predited left' , predictedLeftValue);
+			
+			var refX = refObj.get('left');
+			var refY = refObj.get('top');
+			var objectInitialState = this.fabricObject.get('startState');
+			console.log('dx ', objectInitialState);
+			var originX = objectInitialState['left']
+			var originY = objectInitialState['top']
+			var dx = refX - predictedLeftValue// originX
+			var dy = refY - predictedTopValue//originY
+			console.log('dx ', dx);
+			console.log('dy', dy);
+			console.log("this.fabricObject" , this.fabricObject);
+			console.log("this.fabricObject.get('transitionList')" , this.fabricObject.get('transitionList'))
+			for( var t in this.fabricObject.get('transitionList')){
+				var transition = this.fabricObject.get('transitionList')[t]
+				transition.get('propertyTransitions').each(function(propTransition){
+					if(propTransition.get('name') == 'left'){
+						var fromDx = refX - propTransition.get('from')
+						var toDx = refX - propTransition.get('to')
+						console.log('fromDx', fromDx, 'toDx', toDx);
+						propTransition.set('from', propTransition.get('from') + dx)
+						propTransition.set('to', propTransition.get('to') + dx)
+					}
+					
+					if(propTransition.get('name') == 'top'){
+						var fromDy = refY - propTransition.get('from')
+						var toDy = refY - propTransition.get('to')
+						console.log('fromDy', fromDy, 'toDy', toDy);
+						propTransition.set('from', propTransition.get('from') + dy)
+						propTransition.set('to', propTransition.get('to') + dy)
+					}
+				})
+				
+			}
+		
 		},
 		removeObject : function(){
 			this.model.get('region').remove();
@@ -89,10 +171,11 @@ define(function(require) {
 			this.model = params.model
 			console.log(' params.animator._objs ' , params.animator._objs)
 			console.log(' this.fabricObject ', params.fabricObject);
+			
 			this.animator = params.animator
 			this.fabricObject = params.fabricObject
 			this.template = _.template(template);
-			
+			this.audioTrack = params.audioTrack;
 			this.region = params.region;
 			var frameDropDown = []
 			var region = this.model.get('region')

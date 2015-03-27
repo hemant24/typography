@@ -13,12 +13,24 @@ var AnimateObjectModel = Backbone.AssociatedModel.extend({
 	}],
 	defaults : {
 		name : '',
+		fontSize : null,
+		color : null,
+		fontFamily : null,
 		transitionList : []
 	},
 	initialize: function(){
 		this.on('change', function(){
-			//console.log(this)
+			console.log(this)
 			this.get('fabricObject').set('text',this.get('name'))
+			if(this.get('fontSize') != null){
+				this.get('fabricObject').set('fontSize', this.get('fontSize'))
+			}
+			if(this.get('color') != null){
+				this.get('fabricObject').set('fill', this.get('color'))
+			}
+			if(this.get('fontFamily') != null){
+				this.get('fabricObject').set('fontFamily', this.get('fontFamily'))
+			}
 			if(this.get('fabricObject').canvas)
 				this.get('fabricObject').canvas.renderAll();
 			console.log('Animated Object get changed')

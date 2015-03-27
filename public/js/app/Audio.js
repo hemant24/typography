@@ -310,6 +310,12 @@ define(function(require) {
 				animatedModel.get("transitionList").add(t)
 			})*/
 			var animatedModel = region.data.animateObjectModel
+			console.log('b4 opening size ' + region.data.get('fontSize'))
+			animatedModel.set('fontSize', region.data.get('fontSize'));
+			console.log('b4 opening fontFamily ' + region.data.get('fontFamily'))
+			animatedModel.set('fontFamily', region.data.get('fontFamily'));
+			
+			animatedModel.set('color', region.data.get('fill'));
 			animatedModel.set('region', region)
 			/*
 			console.log('region data is ' , region.data.get("transitionList"))
@@ -320,7 +326,8 @@ define(function(require) {
 			
 			var transitionView = new TransitionView( {	model : animatedModel, 
 														fabricObject : region.data, 
-														animator : this.animator})
+														animator : this.animator,
+														audioTrack : this})
 			//transitionView.render()
 			/*var animateObjectView = new AnimateObjectView( {model : animatedModel, fabricObject : region.data})
 			animateObjectView.render()*/

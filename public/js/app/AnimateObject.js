@@ -20,7 +20,8 @@ define(function(require) {
 			}
 			this.keyframeList = options.keyframeList || [];
 			this.transitionList = options.transitionList || [];
-			this.animateObjectModel = options.animateObjectModel || new AnimateObjectModel({name : text, fabricObject : this , region : {}});
+			this.animateObjectModel = options.animateObjectModel || 
+				new AnimateObjectModel({name : text, fabricObject : this , region : {}});
 			this.startState = options.startState || {};
 			this.listOfStartedTransitions = [];
 			this.canvas = null;
