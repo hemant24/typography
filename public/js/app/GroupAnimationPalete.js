@@ -28,6 +28,8 @@ define(function(require) {
 	*	
 	*	animationParams.animationPalete
 	*	animationParams.audioTrack
+	*	animationParams.transition.in
+	*	animationParams.transition.out
 	*/
 	GroupAnimationPalete.topBottom = function(objectParams, cameraParams, groupParams, animationParams){
 		/*console.log('objectParams', objectParams)
@@ -53,7 +55,7 @@ define(function(require) {
 		}
 		
 		//console.log('adding animation pallete', objectParams.object, 'start time is ' ,objectParams.startTime , 'end time is ',  groupParams.endTime)
-		AnimationPalete.addTransitionToObject(animationParams.transitionName, objectParams.object, objectParams.startTime, groupParams.endTime, cameraParams.camera, aTiming);
+		AnimationPalete.addTransitionToObject(animationParams.transition, objectParams.object, objectParams.startTime, groupParams.endTime, cameraParams.camera, aTiming);
 		if(groupParams.currentObjectIndex == groupParams.totalObject){
 			//_moveCameraToInitialPosition(cameraParams.camera)
 			var moveToIntitialTranistion = CameraMovements.moveCameraToInitialPosition(cameraParams.camera, animationParams.audioTrack);

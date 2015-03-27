@@ -9,7 +9,6 @@ define(function(require) {
 	var PropertyTransition = require('./../PropertyTransition');
 	var TransitionItemView = require('./TransitionItemView')
 	var WaveSurfer = require('wavesurfer');
-	var AnimationPalete = require('./../AnimationPalete');
 	var fabric = require('fabric')
 	require('drawer');
 	require('wavesurfer.transition.region');
@@ -19,28 +18,11 @@ define(function(require) {
 		events: {
             "click .fromShowOnCanvas": "fromShowOnCanvas",
 			"click .addTransition" : "addTransition",
-			"click .changeTransition" : "changeTransition",
 			"click .removeObject" : "removeObject"
         },
 		bindings: {
 			"input.objectName": "value:name,events:['keyup']",
-			"select.frameOptions" : "options:frameDropDown",
-			"select.allTransitionsOptions" : "options:allTransitionsDropDown"
-		},
-		changeTransition : function(){
-			var selectedPalette = this.$el.find('.allTransitionsOptions').val();
-			var region = this.model.get('region');
-			this.fabricObject.set('transitionList', [])
-			var refObj = this.animator.getCamera();
-			if(this.fabricObject.get('camerTransitions')){
-				var dummyCamera = new fabric.ACamera({
-					  top: this.animator.getCamera().get('top'),
-					  left : this.animator.getCamera().get('left')
-					})
-				dummyCamera.set('transitionList', [this.fabricObject.get('camerTransitions')]);
-				refObj = dummyCamera;
-			}
-			AnimationPalete.addTransitionToObject(selectedPalette, this.fabricObject, region.start, region.end, refObj);
+			"select.frameOptions" : "options:frameDropDown"
 		},
 		removeObject : function(){
 			this.model.get('region').remove();
@@ -113,7 +95,6 @@ define(function(require) {
 			
 			this.region = params.region;
 			var frameDropDown = []
-			var allTransitions = []
 			var region = this.model.get('region')
 			var regionStartTime = region['start']
 			var regionEndTime = region['end']
@@ -124,12 +105,6 @@ define(function(require) {
 				frameDropDown.push({label : 'Frame - ' + transition.get('from') + '-' + transition.get('to'), value : transition['cid']})
 			})
 			this.model.set('frameDropDown' , frameDropDown)
-			var allSupportedTransitions = AnimationPalete.getAllTransitions()
-			for(var idx in allSupportedTransitions){
-				allTransitions.push({label : idx, value : idx})
-			}
-			this.model.set('allTransitionsDropDown' , allTransitions)
-			console.log(allTransitions);
 			//console.log(this.template())
 			this.$el.html(this.template({model : {}}));
 			 /*
@@ -155,10 +130,10 @@ define(function(require) {
 			var appendTo = this.$el
 			//appendTo.find("#accordion2").append(new TransitionItemView({model:this.model.get("transitionList").at(0)}).render().el);
 			console.log('start appending')
-			this.model.get("transitionList").each(function(transition){
+			this.model.get("transitionList").each(function(transition, index){
 				
 				if(transition.get('from') >= regionStartTime && transition.get('to') <= regionEndTime){
-					appendTo.find("#accordion2").append(new TransitionItemView({model:transition, fabricObject : params.fabricObject}).el);
+					appendTo.find("#accordion2").append(new TransitionItemView({model:transition, animator : params.animator,  fabricObject : params.fabricObject, index : index}).el);
 				}
 			})
 			console.log('end appending')

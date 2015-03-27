@@ -13,6 +13,7 @@ define(function(require) {
 				relatedModel:PropertyTransition
 			}],
 		 defaults : {
+			animationPalette : '',
 			from : '',
 			to : '',
 			linkedFrom : true,

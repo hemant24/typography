@@ -15,7 +15,10 @@
   </div>
   <div class="form-group">
     <label>Ease </label> 
-     </label> <input type="text" style="width: 50px;" class="ease" data-bind="value:ease,events:['keyup']">
+     </label> 
+	 <!-- <input type="text" style="width: 50px;" class="ease" data-bind="value:ease,events:['keyup']"> -->
+	<select class="allEaseOptions" data-bind="options:allEaseDropDown, value:easeFn"></select>
+	
   </div>
 </fieldset>
 </form>

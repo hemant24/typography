@@ -141,7 +141,7 @@ define(function(require) {
 									totalObject : eachWordDurationMapList.length,
 									currentObjectIndex : parseInt(i) + 1
 								},{
-									transitionName : AnimationPalete.getRandomTransition(),
+									transition : {in : AnimationPalete.getRandomInTransition(),out : AnimationPalete.getRandomOutTransition()},
 									audioTrack : audioTrack
 								})
 								
@@ -221,7 +221,7 @@ define(function(require) {
 			endTime : end
 		})
 		this.setRandomFont(text);
-		AnimationPalete.addTransitionToObject(AnimationPalete.getRandomTransition(), text, start, end,  this.animator.getCamera());
+		AnimationPalete.addTransitionToObject({ in : AnimationPalete.getRandomInTransition(), out : AnimationPalete.getRandomOutTransition()}, text, start, end,  this.animator.getCamera());
 		//AnimationPalete.behindFrontWithTurn(text, start, end, this.animator.getCamera())
 		_removeTextFromLyricsText($(button).text());
 		$(button).remove();

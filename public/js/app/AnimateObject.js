@@ -255,14 +255,15 @@ define(function(require) {
 				
 				var easeFn = function(t, b, c, d) {return -c * Math.cos(t / d * (Math.PI / 2)) + c + b;}
 				if(propertyTransition.ease == null){
-					if(propertyTransition.easeFn != null){
-						easeFn = eval(propertyTransition.easeFn)
+					console.log('propertyTransition.easeFn is ' + propertyTransition.easeFn + ':end');
+					if(propertyTransition.easeFn != null && $.trim(propertyTransition.easeFn).length != 0){
+						easeFn = eval('fabric.util.ease.' + propertyTransition.easeFn)
 					}
 				}else{
 					easeFn = propertyTransition.ease
 				}
 				this._animate2(propertyTransition['name'], propertyTransition['to'], 
-									{	duration : transition['from'] - transition['to'],
+									{	duration : transition['to'] - transition['from'] ,
 										startAt : transition['from'],
 										endAt : transition['to'],
 										seekAt : atTime,
@@ -311,8 +312,8 @@ define(function(require) {
 			}
 			var byValue = to -  options.from;
 			//console.log('start at' , options.startAt)
-			//console.log('time' , options.seekAt - options.startAt, 'from : ' , options.from,'to', to,'duraation', options.duration, 'byValue', byValue)
-			//console.log('easing' , options.easing.name)
+			console.log('time' , options.seekAt - options.startAt, 'from : ' , options.from,'to', to,'duraation', options.duration, 'byValue', byValue)
+			console.log('easing' , options.easing)
 			var value = options.easing(options.seekAt - options.startAt, options.from, byValue,  options.duration);
 			//console.log('value is', value)
 			//console.log(options.seekAt - options.startAt, value)

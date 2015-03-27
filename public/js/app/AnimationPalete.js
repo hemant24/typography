@@ -45,12 +45,13 @@ define(function(require) {
 		AnimationPalete.addTransitionToObject('frontBehind', object, start, end, refObject, enterLeaveTime);
 	}
 	*/
-	AnimationPalete.addTransitionToObject = function(transitionName, object, start, end, refObject, enterLeaveTime){
+	AnimationPalete.addTransitionToObject = function(transitions, object, start, end, refObject, enterLeaveTime){
+		console.log('transitions >>>> ' , transitions);
 		var aTiming = enterLeaveTime || getEnterLeaveTime(start, end)
 		_setXandYOfObject(object, refObject)
-		var enterTransition = allTransitions[transitionName].enter(object, refObject)
-		var remainTransition =  allTransitions[transitionName].remain(object, refObject)
-		var leaveTransition = allTransitions[transitionName].leave(object, refObject)
+		var enterTransition = enterTransitions[transitions.in](object, refObject)//allTransitions[transitionName].enter(object, refObject)
+		var remainTransition =  new Transition();//allTransitions[transitionName].remain(object, refObject)
+		var leaveTransition = leaveTransitions[transitions.out](object, refObject)//allTransitions[transitionName].leave(object, refObject)
 		
 		enterTransition.set('from', aTiming.enterStart);
 		enterTransition.set('to', aTiming.enterEnd);
@@ -70,14 +71,102 @@ define(function(require) {
 		}
 	}
 	
+	var enterTransitions = {
+		'BounceIn' : function(object, refObject){
+				 var enterTransition = new Transition()
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 0, to : 1, easeFn : 'easeOutBounce'}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 0, to : 1, easeFn : 'easeOutBounce'}))
+				return enterTransition;
+			},
+		'ZoomInDown' :  function(object, refObject){
+					var startTop = (object.top - (refObject.height/2 + (refObject.height/2)*.2))
+					var endTop  = (object.top + ((refObject.height/2) + (refObject.height/2)*.2))
+					var enterTransition = new Transition()
+						.addPropertyTransition(new PropertyTransition({name : 'top',  from : startTop, to : object.top}))
+						.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 0, to : 1}))
+						.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 0, to : 1}))
+					return enterTransition;
+				},
+		'FadeInDown' :  function(object, refObject){
+				var startTop = (object.top - (refObject.height/2 + (refObject.height/2)*.2))
+				var endTop  = (object.top + ((refObject.height/2) + (refObject.height/2)*.2))
+				var enterTransition = new Transition()
+					.addPropertyTransition(new PropertyTransition({name : 'top',  from : startTop, to : object.top}))
+					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 0, to : 1}))
+				return enterTransition;
+			},
+		'InDown' :  function(object, refObject){
+				var startTop = (object.top - (refObject.height/2 + (refObject.height/2)*.2))
+				var endTop  = (object.top + ((refObject.height/2) + (refObject.height/2)*.2))
+				var enterTransition = new Transition()
+					.addPropertyTransition(new PropertyTransition({name : 'top',  from : startTop, to : object.top}))
+				return enterTransition;
+			},
+		'ZoomInBehind' : function(object, refObject){
+				 var enterTransition = new Transition()
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 0, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 0, to : 1}))
+				return enterTransition;
+			},
+		'fadeZoomInFront' : function(object, refObject){
+				var enterTransition = new Transition()
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 6, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 6, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 0, to : 1}))
+				return enterTransition;
+			},
+		'ZoomInBehindTurn' : function(object, refObject){
+				 var enterTransition = new Transition()
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 0, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 0, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'angle',  from : 0, to : 360}))
+				return enterTransition;
+			},
+		'fadeZoomInFrontTurn' : function(object, refObject){
+				 var enterTransition = new Transition()
+					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 0, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 6, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 6, to : 1}))
+					.addPropertyTransition(new PropertyTransition({name : 'angle',  from : 0, to : 360}))
+				return enterTransition;
+			}
+	}
+	var leaveTransitions = {
+		'ZoomOutBehind' : function(object, refObject){
+				 var enterTransition = new Transition()
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 1, to : 0}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 1, to : 0}))
+				return enterTransition;
+			},
+		'fadeZoomOutFront' : function(object, refObject){
+				var enterTransition = new Transition()
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 1, to : 6}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 1, to : 6}))
+					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 1, to : 0}))
+				return enterTransition;
+			},
+		'ZoomOutBehindTurn' : function(object, refObject){
+				 var enterTransition = new Transition()
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 1, to : 0}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 1, to : 0}))
+					.addPropertyTransition(new PropertyTransition({name : 'angle',  from : 360, to : 0}))
+				return enterTransition;
+			},
+		'fadeZoomOutFrontTurn' : function(object, refObject){
+				 var enterTransition = new Transition()
+					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 1, to : 0}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 1, to : 6}))
+					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 1, to : 6}))
+					.addPropertyTransition(new PropertyTransition({name : 'angle',  from : 360, to : 0}))
+				return enterTransition;
+			},
+	}
+	
 	var allTransitions = {
+		/*
 		'frontBehind' : {
 			enter : function(object, refObject){
-				var enterTransition = new Transition()
-					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 6, to : 1, ease : fabric.util.ease.easeInQuad}))
-					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 6, to : 1, ease : fabric.util.ease.easeInQuad}))
-					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 0, to : 1, ease : fabric.util.ease.easeInQuad}))
-				return enterTransition;
+				return enterTransitions['fadeZoomInFront'](object, refObject)
 			},
 			remain : function(object, refObject){
 				var remainTransition = new Transition()
@@ -87,37 +176,24 @@ define(function(require) {
 				return remainTransition;
 			},
 			leave : function(object, refObject){
-				var leaveTransition = new Transition()
-					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 1, to : 0}))
-					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 1, to : 0}))
-					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 1, to : 0}))
-				return leaveTransition;
+				return leaveTransitions['ZoomOutBehind'](object, refObject)
 			}
-		},
+		},*/
 		'behindFrontWithTurn' : {
 			enter : function(object, refObject){
-				 var enterTransition = new Transition()
-					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 0, to : 1, ease : fabric.util.ease.easeInQuad}))
-					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 0, to : 1, ease : fabric.util.ease.easeInQuad}))
-					.addPropertyTransition(new PropertyTransition({name : 'angle',  from : 0, to : 360, ease : fabric.util.ease.easeInQuad}))
-				return enterTransition;
+				return enterTransitions['ZoomInBehindTurn'](object, refObject)
 			},
 			remain : function(object, refObject){
 				var remainTransition = new Transition()
-					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 1, to : 1}))
-					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 1, to : 1}))
-					.addPropertyTransition(new PropertyTransition({name : 'angle',  from : 360, to : 360}))
+					//.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 1, to : 1}))
+					//.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 1, to : 1}))
+					//.addPropertyTransition(new PropertyTransition({name : 'angle',  from : 360, to : 360}))
 				return remainTransition;
 			},
 			leave : function(object, refObject){
-				var leaveTransition =  new Transition()
-					.addPropertyTransition(new PropertyTransition({name : 'scaleX',  from : 1, to : 6}))
-					.addPropertyTransition(new PropertyTransition({name : 'scaleY',  from : 1, to : 6}))
-					.addPropertyTransition(new PropertyTransition({name : 'angle',  from : 360, to : 0}))
-					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 1, to : 0}))
-				return leaveTransition;
+				return leaveTransitions['ZoomOutBehind'](object, refObject)
 			}
-		},
+		}/*,
 		'behindFront' : {
 			enter : function(object, refObject){
 				 var enterTransition = new Transition()
@@ -207,13 +283,32 @@ define(function(require) {
 					.addPropertyTransition(new PropertyTransition({name : 'left', from : object.left, to : endLeft}))
 				return leaveTransition;
 			}
-		}
+		}*/
 	}
 	
 	AnimationPalete.getAllTransitions = function(){
-		return allTransitions;
+		var transitions = {}
+		for(var key in enterTransitions){
+			transitions[key] = enterTransitions[key]
+		}
+		for(var key in leaveTransitions){
+			transitions[key] = leaveTransitions[key]
+		}
+		return transitions;
+	}
+	AnimationPalete.getRandomInTransition = function(){
+		var transitionList = Object.keys(enterTransitions);
+		var index = Math.floor(Math.random() * transitionList.length);
+		//console.log('random index is ' + index)
+		return transitionList[index]
 	}
 	
+	AnimationPalete.getRandomOutTransition = function(){
+		var transitionList = Object.keys(leaveTransitions);
+		var index = Math.floor(Math.random() * transitionList.length);
+		//console.log('random index is ' + index)
+		return transitionList[index]
+	}
 	AnimationPalete.getRandomTransition = function(){
 		var transitionList = Object.keys(allTransitions);
 		var index = Math.floor(Math.random() * transitionList.length);

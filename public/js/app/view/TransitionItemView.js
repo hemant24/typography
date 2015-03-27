@@ -5,23 +5,92 @@ if (typeof define !== 'function') {
 define(function(require) {
 	require('backbone.epoxy')
 	var template = require('text!/template/transitionItem.html')
-	
+	var Transition = require('./../Transition');
 	var PropertyTransitionView = require('./PropertyTransitionView')
-	
+	var AnimationPalete = require('./../AnimationPalete');
+	var PropertyTransition = require('./../PropertyTransition')
 	var TransitionItemView = Backbone.Epoxy.View.extend({
 		events: {
             "click .fromShowOnCanvas": "fromShowOnCanvas",
 			"click .fromGetFromCanvas": "fromGetFromCanvas",
 			"click .toGetFromCanvas": "toGetFromCanvas",
-			"click .toShowOnCanvas": "toShowOnCanvas"
+			"click .toShowOnCanvas": "toShowOnCanvas",
+			"click .changeTransition" : "changeTransition",
         },
 		bindings: {
+			"select.allTransitionsOptions" : "options:allTransitionsDropDown",
 			"input.startAt": "value:integer(from),events:['keyup']",
 			"input.endAt": "value:integer(to),events:['keyup']",
 			"span.frameFrom": "text:from",
-			"span.frameTo": "text:to"
+			"span.frameTo": "text:to",
+			"input.index" : "value:integer(index)"
 		 },
+		changeTransition : function(){
+		var selectedPalette = this.$el.find('.allTransitionsOptions').val();
+		var allSupportedTransitions = AnimationPalete.getAllTransitions()
+		var toApplyTransition = allSupportedTransitions[selectedPalette]
+		if(toApplyTransition){
+			var refObj = this.animator.getCamera();
+			if(this.fabricObject.get('camerTransitions')){
+				var dummyCamera = new fabric.ACamera({
+					  top: this.animator.getCamera().get('top'),
+					  left : this.animator.getCamera().get('left')
+					})
+				dummyCamera.set('transitionList', [this.fabricObject.get('camerTransitions')]);
+				refObj = dummyCamera;
+			}
+			
+			var initialTransition = null
+			toApplyTransition = toApplyTransition(this.fabricObject, refObj);
+			var currentTransition = this.fabricObject.get('transitionList')[this.model.get('index')]
+			var previousTransition = this.fabricObject.get('transitionList')[parseInt(this.model.get('index')) - 1]
+			if(previousTransition){
+				initialTransition = previousTransition
+			}else{
+				initialTransition = new Transition()
+				currentTransition.get("propertyTransitions").each(function(propertyTransition){
+					var propertyName = propertyTransition.get('name');
+					initialTransition.addPropertyTransition(new PropertyTransition({name : propertyName,  from : this.fabricObject.get(propertyName), to :  this.fabricObject.get(propertyName), ease : fabric.util.ease.easeInQuad}))
+				}.bind(this))
+			}
+			if(initialTransition){
+				currentTransition.get("propertyTransitions").each(function(propertyTransition){
+					initialTransition.get("propertyTransitions").each(function(copyFromPropertyTransition){
+						if(copyFromPropertyTransition.get('name') == propertyTransition.get('name')){
+							propertyTransition.set('from' , copyFromPropertyTransition.get('from'))
+							propertyTransition.set('to' , copyFromPropertyTransition.get('to'))
+						}
+					})
+				})
+				
+				toApplyTransition.get("propertyTransitions").each(function(propertyTransition){
+					currentTransition.get("propertyTransitions").each(function(copyToPropertyTransition){
+						if(copyToPropertyTransition.get('name') == propertyTransition.get('name')){
+							copyToPropertyTransition.set('from', propertyTransition.get('from'))
+							copyToPropertyTransition.set('to', propertyTransition.get('to'))
+						}
+					})
+				})
+			}
+		}
 		
+		/*
+			var selectedPalette = this.$el.find('.allTransitionsOptions').val();
+			var region = this.model.get('region');
+			this.fabricObject.set('transitionList', [])
+			var refObj = this.animator.getCamera();
+			if(this.fabricObject.get('camerTransitions')){
+				var dummyCamera = new fabric.ACamera({
+					  top: this.animator.getCamera().get('top'),
+					  left : this.animator.getCamera().get('left')
+					})
+				dummyCamera.set('transitionList', [this.fabricObject.get('camerTransitions')]);
+				refObj = dummyCamera;
+			}
+			AnimationPalete.addTransitionToObject(selectedPalette, this.fabricObject, region.start, region.end, refObj);
+			*/
+			console.log('called change transition');
+		},
 		fromShowOnCanvas : function(){
 			this.showOnCanvas("from")
 		},
@@ -53,7 +122,19 @@ define(function(require) {
 		},
 		initialize : function(params){
 			this.model = params.model;
+			console.log('params.index '  , params.index);
+			console.log('params.animator ' , params.animator);
+			this.animator = params.animator;
+			this.model.set('index', params.index);
+			var allTransitions = []
 			//console.log(this.model)
+			var allSupportedTransitions = AnimationPalete.getAllTransitions()
+			for(var idx in allSupportedTransitions){
+				allTransitions.push({label : idx, value : idx})
+			}
+			this.model.set('allTransitionsDropDown' , allTransitions)
+			console.log('allTransitions ' ,allTransitions);
+			
 			this.fabricObject = params.fabricObject;
 			this.template = _.template(template);
 			//console.log(this.template())

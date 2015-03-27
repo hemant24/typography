@@ -66,7 +66,7 @@ define(function(require) {
 					totalObject : eachWordDurationMapList.length,
 					currentObjectIndex : parseInt(i) + 1
 				},{
-					transitionName : AnimationPalete.getRandomTransition(),
+					transition : { in : AnimationPalete.getRandomInTransition(), out : AnimationPalete.getRandomOutTransition()},
 					audioTrack : this.audioTrack
 				})
 			}else{
@@ -76,7 +76,7 @@ define(function(require) {
 					endTime : wordDurationMap.end
 				})
 				this.audioTrack.setRandomFont(text);
-				AnimationPalete.addTransitionToObject(AnimationPalete.getRandomTransition(), text, wordDurationMap.start, wordDurationMap.end, this.audioTrack.animator.getCamera());
+				AnimationPalete.addTransitionToObject({ in : AnimationPalete.getRandomInTransition(), out : AnimationPalete.getRandomOutTransition()}, text, wordDurationMap.start, wordDurationMap.end, this.audioTrack.animator.getCamera());
 			}
 		}
 	}
