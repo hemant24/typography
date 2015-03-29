@@ -72,7 +72,11 @@ define(function(require) {
 		var canvas = new fabric.Canvas('cc');
 		//canvas.setBackgroundColor('#000000');
 		canvas.setBackgroundColor(canvasColor);
-		
+		$("#canvasBackground").val(canvasColor);
+		$("#canvasBackground").bind('keyup', function(){
+			canvas.setBackgroundColor($(this).val());
+			canvas.renderAll();
+		})
 		//canvas.selectionColor  = 'black';
 		//canvas.selectionBorderColor = 'black';
 		//canvas.selectionLineWidth = 5;
@@ -113,16 +117,27 @@ define(function(require) {
 		$("#saveProject").click(function(){
 			var project = new Project();
 			console.log('going to save', project);
-			project.save({animator : animator, 
+			var projectId = $("#loadedProjectId").val()
+			var params = {animator : animator, 
 							canvas : canvas,
-							projectName : $("#projectName").val()});
+							projectName : $("#projectName").val()}
+			if(projectId && $.trim(projectId).length > 0){
+				params.id = projectId
+				project.update(params);
+			}else{
+				project.save(params);
+			}
+			
 
 		})
 		
 		$("#loadProject").click(function(){
 			var projectId = $("#projectList option:selected").val()
 			var projectName = $("#projectList option:selected").text()
+			
 			Project.loadProject(projectId, function(project){
+				$("#loadedProjectId").val(projectId);
+				
 				var oldObjects = []
 				canvas.getObjects().map(function(instance){
 					oldObjects.push(instance);
@@ -137,7 +152,8 @@ define(function(require) {
 				animator._objs.length = 0;
 			
 				var project = project.project;
-				
+				$("#projectName").val(project.projectName);
+				$("#saveProject").val('Update Project');
 				//console.log('project to load is ' , project);
 				
 				canvas.loadFromJSON(project.fabricCanvas, function(){

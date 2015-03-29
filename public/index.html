@@ -61,6 +61,7 @@
 		
 		<select id='projectList'>
 		</select>
+		<input type='text' id='loadedProjectId'></input>
 		<input type='button' id='loadProject' value="Load Project"></input>
 		<input type='text' id='projectName' value="Default Project"></input>
 		<input type='button' id='saveProject' value="Save Project"></input>
@@ -81,13 +82,15 @@
 				<input type="button" id='generate' value="Add"></input>
 			</div>
 			
-			<H3><a href="#">Canvas Properties</a></H3>
+			<H3><a href="#">General Properties</a></H3>
 			<div id="canvasProperties">
 				<form class="form-inline">
 					<fieldset>
 					  <div class="form-group">
-						  <label>Background</label>
+						  <label>Canvas Background</label>
 						  <input type="text" id="canvasBackground" value="25"/>
+						  <label>Text Default Color</label>
+						  <input type="text" id="textColor" value="white"/>
 					  </div>
 					</fieldset>
 				</form>

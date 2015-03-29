@@ -17,7 +17,7 @@ define(function(require) {
 			}else{
 				options = arguments[0]
 				this.callSuper('initialize', options);
-			}
+			} 
 			this.keyframeList = options.keyframeList || [];
 			this.transitionList = options.transitionList || [];
 			this.animateObjectModel = options.animateObjectModel || 
@@ -30,6 +30,9 @@ define(function(require) {
 			this.borderColor = 'white',
 			this.cornerColor = 'white';
 			this.corerSize = 6;
+			if(this.type != 'aCamera' && $ && $.trim($("#textColor").val()).length > 0){
+				this.fill = $("#textColor").val()
+			}
 			this.transparentCorners = true;
 			this.camerTransitions = null;
 			this.cameraTransitionId = options.cameraTransitionId || null;

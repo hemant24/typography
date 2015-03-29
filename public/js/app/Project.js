@@ -19,11 +19,28 @@ define(function(require) {
 						fabricCanvas : Previewer.animatorToJSON(params.animator, params.canvas)}),
 			type  : 'post',
 			success : function(data){
-				alert('saved')
+				//alert('saved')
 			}
 		})
 	}
-	
+	Project.prototype.update = function(params){
+		$.ajax({
+			url : '/project/' + params.id,
+			contentType: 'application/json', 
+			data : JSON.stringify({
+						fps: parseInt($('#fps').val()) , 
+						quality : parseInt($("#quality").val()),
+						height : $("#resolution").val() == 1 ? 300 : 600 ,
+						width : $("#resolution").val() == 1 ? 300 : 600,
+						playLength : parseInt($('#playlength').val()), 
+						projectName : params.projectName,
+						fabricCanvas : Previewer.animatorToJSON(params.animator, params.canvas)}),
+			type  : 'put',
+			success : function(data){
+				//alert('saved')
+			}
+		})
+	}
 	
 	Project['getAllProject'] = function(callBack){
 		$.ajax({

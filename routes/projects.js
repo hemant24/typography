@@ -23,6 +23,16 @@ router.post('/', function(req, res, next) {
 	})
 });
 
+router.put('/:id', function(req, res, next) {
+	var projectId = req.params.id;
+	console.log('will update project ' + projectId)
+	var projectId = new BSON.ObjectID(projectId);
+	var projectsCollection = db.collection('projects');
+	projectsCollection.update({_id : projectId}, req.body, {w:1}, function(err, result) {
+		console.log('project updated successfully');
+	})
+});
+
 router.get('/', function(req, res, next) {
 	try{
 	var projectsCollection = db.collection('projects');
