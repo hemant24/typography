@@ -30,9 +30,10 @@ define(function(require) {
 			this.borderColor = 'white',
 			this.cornerColor = 'white';
 			this.corerSize = 6;
-			if(this.type != 'aCamera' && $ && $.trim($("#textColor").val()).length > 0){
+			/* Have to find workaround so that it works node.
+			if(this.type != 'aCamera' && ($ != undefined) && $.trim($("#textColor").val()).length > 0){
 				this.fill = $("#textColor").val()
-			}
+			}*/
 			this.transparentCorners = true;
 			this.camerTransitions = null;
 			this.cameraTransitionId = options.cameraTransitionId || null;
@@ -224,7 +225,7 @@ define(function(require) {
 					transition = transition.toJSON()
 				}
 				if(time >= transition['from'] && time <= transition['to']){
-					console.log('found transition', transition);
+					//console.log('found transition', transition);
 					return transition;
 				}
 			}
@@ -259,8 +260,8 @@ define(function(require) {
 				
 				var easeFn = function(t, b, c, d) {return -c * Math.cos(t / d * (Math.PI / 2)) + c + b;}
 				if(propertyTransition.ease == null){
-					console.log('propertyTransition.easeFn is ' + propertyTransition.easeFn + ':end');
-					if(propertyTransition.easeFn != null && $.trim(propertyTransition.easeFn).length != 0){
+					//console.log('propertyTransition.easeFn is ' + propertyTransition.easeFn + ':end');
+					if(propertyTransition.easeFn != null &&  propertyTransition.easeFn.trim().length != 0){
 						easeFn = eval('fabric.util.ease.' + propertyTransition.easeFn)
 					}
 				}else{
@@ -316,8 +317,8 @@ define(function(require) {
 			}
 			var byValue = to -  options.from;
 			//console.log('start at' , options.startAt)
-			console.log('time' , options.seekAt - options.startAt, 'from : ' , options.from,'to', to,'duraation', options.duration, 'byValue', byValue)
-			console.log('easing' , options.easing)
+			//console.log('time' , options.seekAt - options.startAt, 'from : ' , options.from,'to', to,'duraation', options.duration, 'byValue', byValue)
+			//console.log('easing' , options.easing)
 			var value = options.easing(options.seekAt - options.startAt, options.from, byValue,  options.duration);
 			//console.log('value is', value)
 			//console.log(options.seekAt - options.startAt, value)

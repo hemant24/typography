@@ -44,7 +44,7 @@ define(function(require) {
 		return {background : canvas.getBackgroundColor() , objects : initialStateObjects}
 	}
 	
-	Previewer['preview'] = function(canvasJSON, playLength, quality, callBack){
+	Previewer['preview'] = function(canvasJSON, playLength, quality, resolutionFactor, callBack){
 		if(!quality){
 			quality = 1
 		}
@@ -56,8 +56,8 @@ define(function(require) {
 			animateFor = 'server';
 			previewCanvas = fabric.createCanvasForNode(Animator.getCameraHeight() * quality, Animator.getCameraWidth() * quality);
 		}else{
-			$('#previewCanvas').attr('width', Animator.getCameraWidth())
-			$('#previewCanvas').attr('height', Animator.getCameraHeight())
+			//$('#previewCanvas').attr('width', Animator.getCameraWidth())
+			//$('#previewCanvas').attr('height', Animator.getCameraHeight())
 			previewCanvas = new fabric.Canvas('previewCanvas');
 		}
 		var animator = new Animator(previewCanvas, animateFor, playLength);
@@ -71,6 +71,7 @@ define(function(require) {
 					previewCanvas.remove(objectToRemove);
 				}else{
 					objectToRemove.set('quality', quality)
+					objectToRemove.set('resolutionFactor', resolutionFactor)
 				}
 			}
 			//console.log('animator', animator)

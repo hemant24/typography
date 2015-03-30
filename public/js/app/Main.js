@@ -248,7 +248,8 @@ define(function(require) {
 				contentType: 'application/json', 
 				data : JSON.stringify({
 							fps: parseInt($('#fps').val()) , 
-							quality : parseInt($("#quality").val()),
+							quality : parseFloat($("#quality").val()),
+							resolutionFactor : $("#resolution").val() ,
 							height : $("#resolution").val() == 1 ? 240 : 360 ,
 							width : $("#resolution").val() == 1 ? 426 : 640,
 							playLength : parseInt($('#playlength').val()), 
@@ -313,7 +314,7 @@ animator.play()*/
 			//console.log('going to call previwer')
 			//console.log(JSON.stringify(Previewer.animatorToJSON(animator, canvas)))
 			//console.log(JSON.stringify(Previewer.canvasToJSON(canvas)))
-			Previewer.preview(JSON.stringify(Previewer.animatorToJSON(animator, canvas)), 15000 ,1, function(animator){
+			Previewer.preview(JSON.stringify(Previewer.animatorToJSON(animator, canvas)), 15000 ,1, 1, function(animator){
 				//audioTrack.wavesurfer.stop();
 				audioTrack.wavesurfer.playPause();
 				audioTrack.wavesurfer.backend.un('audioprocess');

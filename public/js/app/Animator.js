@@ -119,9 +119,11 @@ define(function(require) {
                           };
 						  
 	function pinToCenter(obj){
-		//console.log('camera quality is '  + obj.get('quality'))
+		console.log('camera quality is '  + obj.get('quality'))
 		var scaleLevel = obj.get('quality')
-		this.canvas.setZoom(scaleLevel)
+		var resolutionFactor = obj.get('resolutionFactor')
+		console.log('camera resolutionFactor is '  + obj.get('resolutionFactor'))
+		this.canvas.setZoom(resolutionFactor * scaleLevel)
 		//obj.setCoords() why it is not working
 		var canvasCenterPoint = new fabric.Point(this.canvas.getCenter().left, this.canvas.getCenter().top)
 		var objectCenterPoint = obj.getCenterPoint();
@@ -130,7 +132,7 @@ define(function(require) {
 		
 		//console.log(objectCenterPoint.subtract(canvasCenterPoint))
 		//console.log(objectCenterPoint.subtract(canvasCenterPoint).multiply(2))
-		this.canvas.absolutePan(objectCenterPoint.multiply(scaleLevel).subtract(canvasCenterPoint))
+		this.canvas.absolutePan(objectCenterPoint.multiply(resolutionFactor * scaleLevel).subtract(canvasCenterPoint))
 		//this.canvas.absolutePan(objectCenterPoint.subtract(canvasCenterPoint))
 		
 		//this.canvas.zoomToPoint(objectCenterPoint.subtract(canvasCenterPoint), 1.3)

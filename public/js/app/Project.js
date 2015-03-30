@@ -12,8 +12,9 @@ define(function(require) {
 			data : JSON.stringify({
 						fps: parseInt($('#fps').val()) , 
 						quality : parseInt($("#quality").val()),
-						height : $("#resolution").val() == 1 ? 300 : 600 ,
-						width : $("#resolution").val() == 1 ? 300 : 600,
+						resolutionFactor : $("#resolution").val() ,
+						height : $("#resolution").val() == 1 ? 240 : 360 ,
+						width : $("#resolution").val() == 1 ? 426 : 640,
 						playLength : parseInt($('#playlength').val()), 
 						projectName : params.projectName,
 						fabricCanvas : Previewer.animatorToJSON(params.animator, params.canvas)}),
@@ -30,8 +31,9 @@ define(function(require) {
 			data : JSON.stringify({
 						fps: parseInt($('#fps').val()) , 
 						quality : parseInt($("#quality").val()),
-						height : $("#resolution").val() == 1 ? 300 : 600 ,
-						width : $("#resolution").val() == 1 ? 300 : 600,
+						resolutionFactor : $("#resolution").val() ,
+						height : $("#resolution").val() == 1 ? 240 : 360 ,
+						width : $("#resolution").val() == 1 ? 426 : 640,
 						playLength : parseInt($('#playlength').val()), 
 						projectName : params.projectName,
 						fabricCanvas : Previewer.animatorToJSON(params.animator, params.canvas)}),

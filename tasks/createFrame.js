@@ -10,8 +10,10 @@ var fs = require('fs')
 function startTask(){
 	jobs.process('createFrames', function(job, done){
 		console.log('in directory', job.data.dir,' from frame' , job.data.from,'to frame' , job.data.to,  'will proce sdss data' , job.data.payload, 'totalWorker ' , job.data.totalWorker);
+		
+		console.log(' quality is >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' , job.data.payload['quality']);
   
-		var canvas = fabric.createCanvasForNode(job.data.payload['width'] * job.data.payload['quality'], job.data.payload['height'] * job.data.payload['quality']);
+		var canvas = fabric.createCanvasForNode(parseInt(426 * job.data.payload['resolutionFactor']*job.data.payload['quality']), parseInt(240 * job.data.payload['quality'] * job.data.payload['resolutionFactor']));
 		var animator = new Animator(canvas, 'server', job.data.payload['playLength']);
 		canvas.loadFromJSON(job.data.payload['fabricCanvas'], 
 		function(){
@@ -21,6 +23,7 @@ function startTask(){
 					canvas.remove(objectToRemove);
 				}else{
 					objectToRemove.set('quality', job.data.payload['quality'])
+					objectToRemove.set('resolutionFactor', job.data.payload['resolutionFactor'])
 				}
 			}
 			//console.log('canvas is loaded will start creating frames')
