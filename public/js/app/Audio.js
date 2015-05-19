@@ -21,7 +21,8 @@ define(function(require) {
 	var Properties = require('app/Properties');
 	var GroupAnimationPalete = require('./GroupAnimationPalete');
 	var WordGroupUtil =  require('./WordGroupUtil');
-	var allFontFamily = ["Comic Sans MS", "Times New Roman", "Impact", "Trebuchet MS", "Verdana"]
+	var ClipBoard = require('app/ClipBoard')
+	var allFontFamily = ["Trebuchet MS", "Verdana", "Harry Potter", "DJB Just Don\'t Call Me Crazy", "TH3 MACHINE", "Billion Stars Personal Use ","DK Crayon Crumble", "Friday Night Lights"]
 	var allFontSize = [100, 40, 80 ]
 	var AudioTrack = function(file, animator){
 		
@@ -251,6 +252,177 @@ define(function(require) {
 	}
 	
 	var _bindEvents = function(){
+		console.log('binding.................................')
+		$(document).bind('copy', function(){
+			var selectedRegion = null;
+			for(var r in this.wavesurfer.regions.list){
+				var inRegion = this.wavesurfer.regions.list[r]
+				if($(inRegion.element).hasClass('selected')){
+					selectedRegion = inRegion;
+					break;
+				}
+			}
+			console.log(' selectedRegion ' , selectedRegion)
+			if(selectedRegion){
+				var startTime = parseInt(selectedRegion.start * 1000) - 10;
+				var endTime = parseInt(selectedRegion.end * 1000) + 10;
+				var aObjects = []
+				aObjects.push(selectedRegion)
+				for(var i in this.animator._objs){
+					var obj = this.animator._objs[i];
+					var transitionList = obj.get('transitionList');			
+					console.log('checking object of type ' + obj.get('type'))
+					if(transitionList && transitionList.length && transitionList.length > 0){
+						var firstTransition = transitionList[0];
+						var lastTransition = transitionList[transitionList.length -1];
+						console.log('transition from ' , firstTransition.get('from'))
+						console.log('startTime ' , startTime)
+						console.log('transition to ' , lastTransition.get('to'))
+						console.log('endTime ' , endTime)
+						console.log("firstTransition.get('from') >= startTime " , firstTransition.get('from') >= startTime)
+						console.log("lastTransition.get('to') <= endTime " , lastTransition.get('to') <= endTime);
+						if(firstTransition.get('from') >= startTime && lastTransition.get('to') <= endTime){
+							aObjects.push(obj);
+						}
+					}
+				}
+				console.log('aObjects' , aObjects);
+				if(aObjects && aObjects.length && aObjects.length > 0){
+					ClipBoard.putData(aObjects);
+				}
+			}
+		}.bind(this))
+		/* Disabling paste functionality as its not fully developed yet.
+		
+		$(document).bind('paste', function(){
+		
+			function getCameraTransitionsMap(cameraTransitionIdList){
+				var cameraTransitionList = []
+				var camera = this.animator.getCamera();
+				var cameraTransitions = camera.get('transitionList')
+				for(var t in cameraTransitions){
+					var ctId = cameraTransitions[t].get('transitionId')
+					if(cameraTransitionIdList.indexOf(ctId) != -1 ){
+						cameraTransitionList.push(cameraTransitions[t])
+					}
+				}
+				console.log('return cameraTransitionList', cameraTransitionList);
+				cameraTransitionList.sort(function(a,b){
+					if(a.get('from') > b.get('from') ){
+						return 1
+					}else{
+						return -1
+					}
+				})
+				return cameraTransitionList
+			}
+			console.log('yes its pasting');
+			var data = ClipBoard.getData();
+			if(data && data.length){
+				console.log('data is ' , data);
+				var region = null
+				for(var di in data){
+					if(!data[di].type){
+						region = data[di];
+					}
+				}
+				console.log('region is ' , region);
+				var cameraTransitionIdList = []
+				var deltaInTime = 0;
+				for(var d in data){
+					if(data[d].type && data[d].type == 'aText'){
+						var serializedData = JSON.stringify(data[d].toObject());
+						console.log('serializedData ' , serializedData);
+						var deSerialized = JSON.parse(serializedData)
+						var aText = fabric.AText.fromObject(deSerialized);
+						var transitionList = aText.get('transitionList');
+						aText.set('transitionList', []);
+						var transitionModelList = []
+						if(aText.get('cameraTransitionId') != null){
+							cameraTransitionIdList.push(aText.get('cameraTransitionId'))
+						}
+						var currentDuration = parseInt(this.wavesurfer.backend.getCurrentTime() * 1000);
+						
+						for(var i in transitionList){
+							
+							var transition = transitionList[i]
+							if(i==0){
+								var startOfFirstTransition = transition['from'];
+								deltaInTime = currentDuration - startOfFirstTransition
+							}
+							var regionDelta = 0
+							if(region){
+								
+								regionDelta = transition['from'] - parseInt(region['start'] * 1000)
+								console.log('region Delta is ', regionDelta)
+							}
+							transition['from'] = transition['from'] + deltaInTime + regionDelta;
+							transition['to'] = transition['to'] + deltaInTime + regionDelta;
+							transitionModelList.push(new Transition(transition));
+						}
+						aText.set('transitionList', transitionModelList);
+						aText.get('animateObjectModel').set('transitionList', transitionModelList);
+						
+						this.animator.add(aText);
+						var firstTransition = transitionList[0]
+						var lastTransition = transitionList[transitionList.length - 1]
+						var startTime = firstTransition['from'];
+						var endTime = lastTransition['to'];
+						var frameRegion = this.addFramesRegion({
+												start : startTime,
+												end : endTime,
+												color : "red",
+												data : aText
+											})
+						aText.get('animateObjectModel').set('region', frameRegion);					
+					}
+				}
+				console.log('cameraTransitionList  ' , cameraTransitionIdList);
+				var cameraTransitionsToAdd = getCameraTransitionsMap.call(this, cameraTransitionIdList);
+				for(var cti in cameraTransitionsToAdd){
+					var cTrans = cameraTransitionsToAdd[cti]
+					if(region){
+						regionDelta = cTrans.get('from') - parseInt(region['start'] * 1000)
+						console.log('region Delta is ', regionDelta)
+					}
+					var movementTransition =  new Transition({from : cTrans.get('from') + deltaInTime + regionDelta , to :  cTrans.get('to')+ deltaInTime + regionDelta})
+					cTrans.get('propertyTransitions').each(function(propTrans){
+						movementTransition.get('propertyTransitions').add(new PropertyTransition({name : propTrans.get('name') , from : propTrans.get('from'), to : propTrans.get('to')}))
+					})
+					console.log('new transtiion to add ', movementTransition);
+					var camera = this.animator.getCamera();
+					camera.addTransition(movementTransition);
+				}
+				console.log('now camera transition is '  , this.animator.getCamera().get('transitionList'))
+					
+			}
+		}.bind(this))
+		*/
+		
+		
+		
+		
+		this.wavesurfer.on('region-click', function(region, e){
+			console.log('wavesurfer', this.wavesurfer);
+			for(var r in this.wavesurfer.regions.list){
+				var inRegion = this.wavesurfer.regions.list[r]
+				$(inRegion.element).removeClass('selected');
+			}
+			$(region.element).addClass('selected');
+			/*
+			var startTime = region.start * 1000;
+			var endTime = region.end * 1000;
+			var aObjects = []
+			for(var i in this.animator._objs){
+				var obj = this.animator._objs[i];
+				var hasTransitions = obj.getKeyframeByTime(startTime);
+				if(hasTransitions){
+					aObjects.push(obj);
+				}
+			}
+			console.log('aObjects' , aObjects);*/
+		}.bind(this))
+		
 		this.wavesurfer.on('region-dblclick', function(region, e){
 			var dialogOption = {}
 			_addTextButtonsToDialog.call(this, $("#textSelection"), region)

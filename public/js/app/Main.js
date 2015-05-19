@@ -4,6 +4,7 @@ define(function(require) {
 		require('jquery.ui.all')
 		require('jquery.layout.resizePaneAccordions')
 		require('app/AObjects')
+		require('app/ClipBoard')
 		//require('socket.io')
 		require('backbone')
 		require('app/view/TransitionItemView');
@@ -241,8 +242,14 @@ define(function(require) {
 		
 		$("#createVideo").click(function(){
 			console.log('current fps is ' , parseInt($('#fps').val()))
-			
+			var background = {
+				type : 'color'
+			}
+			if($("#backgroundImage").is(':checked')){
+				background['type'] = 'image'
+			}
 			console.log('$("#resolution").val()' , $("#resolution").val());
+			
 			$.ajax({
 				url : '/video/',
 				contentType: 'application/json', 
@@ -253,7 +260,8 @@ define(function(require) {
 							height : $("#resolution").val() == 1 ? 240 : 360 ,
 							width : $("#resolution").val() == 1 ? 426 : 640,
 							playLength : parseInt($('#playlength').val()), 
-							fabricCanvas : Previewer.animatorToJSON(animator, canvas)}),
+							background : background,
+							fabricCanvas : Previewer.animatorToJSON(animator, canvas, background)}),
 				type  : 'post',
 				success : function(data){
 					$("#videoLink").attr('href', 'output/' + data.url + '/' + data.filename)
@@ -301,7 +309,6 @@ animator.play()*/
 		})
 		
 		$("#add").click(function(){
-		
 			audioTrack.addFramesRegion({
 					start : 100,
 					end : 800,

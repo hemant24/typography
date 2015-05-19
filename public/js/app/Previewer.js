@@ -15,7 +15,10 @@ define(function(require) {
 	
 	var previewCanvas = null;
 	
-	Previewer['animatorToJSON'] = function(animator, canvas){
+	Previewer['animatorToJSON'] = function(animator, canvas, background){
+		if(!background){
+			background = {type : 'color'}
+		}
 		var objectsToSerialize = []
 		for(var i in animator._objs){
 			objectsToSerialize.push(animator._objs[i].toObject())
@@ -26,9 +29,14 @@ define(function(require) {
 				objectsToSerialize.push(instance.toObject())
 			}
 		})*/
-		
-		return {background : canvas.backgroundColor , objects : objectsToSerialize}
-		
+		var result = {}
+		result['objects'] = objectsToSerialize
+		if(background && background.type){
+			if(background.type == 'color'){
+				result['background'] = canvas.backgroundColor
+			}
+		}
+		return result
 	}
 	
 	Previewer['canvasToJSON'] = function(canvas){

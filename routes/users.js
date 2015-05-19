@@ -86,7 +86,8 @@ var frameCreationJob = function(payload, dir){
 			height : job.data.height,
 			width : job.data.width,
 			resolutionFactor : resolutionFactor,
-			fps : job.data.payload.fps
+			fps : job.data.payload.fps,
+			background : payload['background']
 		}).save( function(err){
 		   if( !err ) console.log( videoJob.id );
 		});
