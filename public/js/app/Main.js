@@ -94,6 +94,15 @@ define(function(require) {
 		transitions.push(transition2)
 	
 		var aText = new fabric.AText("Hemant",new Properties({angle : 90}))
+		/*fabric.util.loadImage('assets/img.png', function(oImg) {
+			var fi = new fabric.AImage(oImg,{});
+			console.log(fi)
+		  // scale image down, and flip it, before adding it onto canvas
+		  fi.scale(0.2).setFlipX(true);
+		  canvas.add(fi);
+		});*/
+		
+		//canvas.add(aText)
 		//animator.add(aText)
 		aText.addTransitions(transitions)
 		//animator.play()

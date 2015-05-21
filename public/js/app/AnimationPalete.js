@@ -160,6 +160,13 @@ define(function(require) {
 					.addPropertyTransition(new PropertyTransition({name : 'angle',  from : 360, to : 0}))
 				return enterTransition;
 			},
+		'fadeOutRight' : function(object, refObject){
+				var endLeft  = (object.left + ((refObject.left/2) + (refObject.left/2)*.2))
+				var enterTransition = new Transition()
+					.addPropertyTransition(new PropertyTransition({name : 'left',  from : object.left, to : endLeft}))
+					.addPropertyTransition(new PropertyTransition({name : 'opacity',  from : 1, to : 0}))
+				return enterTransition;
+		}
 	}
 	
 	var allTransitions = {

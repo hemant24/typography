@@ -183,6 +183,25 @@ define(function(require) {
 		}
 	}
 	
+	AudioTrack.prototype.addImageObjectToAnimtor = function(params){
+		fabric.util.loadImage('assets/img.png', function(oImg) {
+			var object = new fabric.AImage(oImg, new Properties({left : this.animator.getCamera().get('left'), 
+			top : this.animator.getCamera().get('top')}));
+			object.scale(0.1);
+			var startTime = params.startTime;
+			var endTime = params.endTime;
+			var frameRegion = this.addFramesRegion({
+				start : startTime,
+				end : endTime,
+				color : "red",
+				data : object
+			})
+			this.animator.add(object);
+			object.get('animateObjectModel').set('region', frameRegion);
+			AnimationPalete.addTransitionToObject({ in : 'InDown', out : 'fadeOutRight'}, object, startTime, endTime,  this.animator.getCamera());
+		}.bind(this));
+	}
+	
 	AudioTrack.prototype.addTextObjectToAnimator = function(params){
 		var object = new fabric.AText(params.text, new Properties({left : this.animator.getCamera().get('left'), 
 			top : this.animator.getCamera().get('top')}));;
@@ -220,7 +239,7 @@ define(function(require) {
 			text : $(button).text(),
 			startTime : start,
 			endTime : end
-		})
+		})		
 		this.setRandomFont(text);
 		AnimationPalete.addTransitionToObject({ in : AnimationPalete.getRandomInTransition(), out : AnimationPalete.getRandomOutTransition()}, text, start, end,  this.animator.getCamera());
 		//AnimationPalete.behindFrontWithTurn(text, start, end, this.animator.getCamera())
@@ -249,6 +268,14 @@ define(function(require) {
 	}
 	var handleRemoveLyricsWord = function(mainDiv, region){
 		mainDiv.find('.lyricsText:last').remove()
+	}
+	var handleAddImage = function(mainDiv, region){
+		var start = parseInt(region.start*1000)
+		var end = parseInt(region.end*1000)
+		this.addImageObjectToAnimtor({
+			startTime : start,
+			endTime : end
+		})
 	}
 	
 	var _bindEvents = function(){
@@ -432,6 +459,10 @@ define(function(require) {
 			$("#textSelection").find('#removeLyricsWord').unbind('click').bind('click', function(){
 				handleRemoveLyricsWord.call(this, $("#textSelection"), region)
 			}.bind(this))
+			$("#textSelection").find('#addImage').unbind('click').bind('click', function(){
+				handleAddImage.call(this, $("#textSelection"), region)
+			}.bind(this))
+			
 			$("#textSelection").dialog({
 			buttons: [
 				
@@ -459,7 +490,7 @@ define(function(require) {
 			  ],
 			  position: { my: "left+19 bottom", at: "left bottom", of: e },
 			  show : true,
-			  width : 450
+			  width : 600
 			});
 			console.log('region clicked', region, e)
 		}.bind(this))
