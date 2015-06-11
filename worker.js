@@ -1,27 +1,20 @@
+var program = require('commander'),
+cluster = require('cluster'),
+coreSize = require('os').cpus().length;
 
-var app = require('./app');
 var createFrameTask = require('./tasks/createFrame')
 var createVideoTask = require('./tasks/createVideo')
 var mergeAudioVideoTask = require('./tasks/mergeAudioVideo')
-var http = require('http');
 
-var server = http.createServer(app);
-var coreSize = require('os').cpus().length;
-var kue = require('kue')
-  , jobs = kue.createQueue()
-  , cluster = require('cluster');
-
-var io = require('socket.io')(server);
-io.on('connection', function(socket){
-	socket.emit('welcome', {test:'dummy'})
-   console.log('user connected');
-});
-
-server.listen(3000);
 /*
+program
+  .version('0.0.1')
+  .option('start, --start', 'start worker')
+  .parse(process.argv);
+*/
+
 if(cluster.isMaster){
-	//if master listen to url
-	server.listen(3000);
+	console.log('yes its master')
 	for (var i = 0; i < coreSize -1 ; i++) {
 		cluster.fork();
 	}
@@ -42,13 +35,9 @@ if(cluster.isMaster){
 		worker.process.pid, signal || code);
 	});
 
+	
 }else{
-	console.log(createFrameTask)
 	createFrameTask();
 	createVideoTask();
 	mergeAudioVideoTask();
 }
-
-*/
-
-module.exports = server;
