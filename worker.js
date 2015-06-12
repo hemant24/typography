@@ -5,6 +5,7 @@ coreSize = require('os').cpus().length;
 var createFrameTask = require('./tasks/createFrame')
 var createVideoTask = require('./tasks/createVideo')
 var mergeAudioVideoTask = require('./tasks/mergeAudioVideo')
+var typographyTask = require('./tasks/typographyTask')
 
 /*
 program
@@ -15,6 +16,7 @@ program
 
 if(cluster.isMaster){
 	console.log('yes its master')
+	typographyTask();
 	for (var i = 0; i < coreSize -1 ; i++) {
 		cluster.fork();
 	}
