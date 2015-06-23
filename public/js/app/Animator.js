@@ -6,21 +6,95 @@ define(function(require) {
 	var env = require('./Env')
 	var Sequence = require('./Sequence')
 	var Properties = require('./Properties')
+	try{
+		require('three_new')
+	}catch(e){
+	
+	}
+	
+	//console.log(THREE);
+	
+	/*
+	THREE = require('three.js')
+	require('three.js', function(t){
+		console.log('loaded node three.js ' )
+		THREE = t;
+	}, function(err){
+		var failedId = err.requireModules && err.requireModules[0]
+		if (failedId === 'three.js') {
+			requirejs.undef(failedId);
+		}
+	})*/
+	
+
 	//var async = require('async')
 	var cameraH = 240;
 	var cameraW = 426;
-	var Animator = function(canvas, animateFor, playLength){
+	var Animator = function(canvas, animateFor, playLength, enable3d){
 		this._objs = [];
 //		console.log(canvas)
 		this.canvas = canvas;
 		this.playLength = playLength || 3000;
+		if(!enable3d){
+			this.enable3d = false;
+		}else{
+			this.enable3d = enable3d;
+		}
+		
 		//this.isPreview = isPreview,
 		this.animateFor = animateFor || 'drawing';
 		this.camera = null;
 		this.cameraHeight = cameraH;
 		this.cameraWidth = cameraW;
 		this.fps = 25;
+		if(enable3d){
+			this.webGlCanvas = new WebGlCanvas(this)
+		}
 	}
+	
+	var WebGlCanvas = function(animator){
+		this.animator = animator
+		this.scene = new THREE.Scene();
+		this.camera = new THREE.PerspectiveCamera(45, cameraW/ cameraH, 0.1, 1000);
+		this.renderer = new THREE.WebGLRenderer();
+		this.domEl = this.renderer.domElement
+		//var webGLRenderer = new THREE.WebGLRenderer();
+		this.renderer.setClearColor(new THREE.Color(0xbbbbbb, 1.0));
+		this.renderer.setSize(cameraW, cameraH);
+		this.renderer.shadowMapEnabled = true;
+		
+		function createMesh(geom) {
+			var canvasMap = new THREE.Texture(this.animator.canvas.lowerCanvasEl);
+			var mat = new THREE.MeshPhongMaterial();
+			mat.map = canvasMap;
+			var mesh = new THREE.Mesh(geom, mat);
+			return mesh;
+		}
+			
+		this.cube = createMesh.call(this, new THREE.BoxGeometry(15,15,15));
+		this.cube.position.x = 0;
+		this.cube.position.y = 0;
+		this.scene.add(this.cube);
+		
+		this.camera.position.x = 00;
+		this.camera.position.y = 00;
+		this.camera.position.z = 30;
+		this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+		var ambiLight = new THREE.AmbientLight( 0xffffff);
+		this.scene.add(ambiLight);
+
+		var light = new THREE.DirectionalLight();
+		light.position.set(0, 0, 20);
+		//this.scene.add(light);
+	}
+	
+	WebGlCanvas.prototype.renderAll = function(){
+		this.cube.rotation.y += 0.02;
+		this.cube.material.map.needsUpdate = true;
+		this.renderer.render(this.scene, this.camera);
+	}
+	
 	var now = null;
 	var frameCount = 0;
 	
@@ -86,6 +160,13 @@ define(function(require) {
 		//console.log('updating logic took ' + (new Date() - now))
 		//console.log(this.canvas)
 		this.canvas.renderAll();
+		if(this.enable3d){
+			this.webGlCanvas.renderAll();
+		}
+		/*
+		this.webGlOptions.cube.material.map.needsUpdate = true;
+		this.webGlOptions.renderer.render(this.webGlOptions.scene, this.webGlOptions.camera);
+		*/
 		//console.log('updating graphics took' + (new Date() - now ))
 	}
 	Animator.prototype.getCamera = function(){

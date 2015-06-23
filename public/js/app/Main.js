@@ -9,6 +9,7 @@ define(function(require) {
 		require('backbone')
 		require('app/view/TransitionItemView');
 		require('jquery.fileupload');
+		require('three_new')
 		//var io = require('socket.io')
 		
 		//var video = io.connect('http://localhost:3000/video')
@@ -50,6 +51,7 @@ define(function(require) {
 			west__size:			260
 		,	east__size:			320
 		,   south__size : 150
+		,	'ui-layout-east' : 'scroll'
 			// RESIZE Accordion widget when panes resize
 		,	west__onresize:		$.layout.callbacks.resizePaneAccordions
 		,	east__onresize:		$.layout.callbacks.resizePaneAccordions
@@ -310,7 +312,6 @@ animator.play()*/
 		animator.add(camera)
 		animator.initializeCamera(camera)
 		animator.addGridLines(gridAndCameraColor);
-		
 		$("#seekBtn").click(function(){
 			console.log("seeking to " ,  $("#seekTime").val())
 			animator.seek( $("#seekTime").val())
@@ -332,6 +333,7 @@ animator.play()*/
 			//console.log(JSON.stringify(Previewer.canvasToJSON(canvas)))
 			Previewer.preview(JSON.stringify(Previewer.animatorToJSON(animator, canvas)), 15000 ,1, 1, function(animator){
 				//audioTrack.wavesurfer.stop();
+				$("#WebGL-output").html(animator.webGlCanvas.domEl);
 				audioTrack.wavesurfer.playPause();
 				audioTrack.wavesurfer.backend.un('audioprocess');
 				audioTrack.wavesurfer.backend.on('audioprocess', function(time){
@@ -396,7 +398,98 @@ animator.play()*/
 				'collapsible':  true
 			});
 	*/
+		//addThreejsStuff();
+		function addThreejsStuff(){
+			var width = 426;
+			var height = 240;
+			/*
+			
+			var canvas = document.createElement('canvas');
+			canvas.width = width;
+			canvas.height = height;
+			var context = canvas.getContext('2d');
+			context.font = '20pt Arial';
+			context.fillStyle = 'red';
+			context.fillRect(0, 0, canvas.width, canvas.height);
+			context.fillStyle = 'white';
+			context.fillRect(10, 10, canvas.width - 20, canvas.height - 20);
+			context.fillStyle = 'black';
+			context.textAlign = "center";
+			context.textBaseline = "middle";
+			context.fillText(new Date().getTime(), canvas.width / 2, canvas.height / 2);
 
+			context.fillStyle = 'red';
+			context.fillRect(0, 0, 1, 1);*/
+			
+			console.log(canvas.lowerCanvasEl);
+			var lcanvas = canvas.lowerCanvasEl//document.getElementById('previewCanvas');
+			
+			var scene = new THREE.Scene();
+
+			// create a camera, which defines where we're looking at.
+			var camera = new THREE.PerspectiveCamera(45, width/ height, 0.1, 1000);
+
+			// create a render and set the size
+			var webGLRenderer = new THREE.WebGLRenderer();
+			webGLRenderer.setClearColor(new THREE.Color(0xbbbbbb, 1.0));
+			webGLRenderer.setSize(width, height);
+			webGLRenderer.shadowMapEnabled = true;
+
+
+			var cube = createMesh(new THREE.BoxGeometry(25,15,15));
+			cube.position.x = 0;
+			cube.position.y = 4;
+			scene.add(cube);
+
+
+			// position and point the camera to the center of the scene
+			camera.position.x = 00;
+			camera.position.y = 12;
+			camera.position.z = 28;
+			camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+			var ambiLight = new THREE.AmbientLight(0x141414);
+			scene.add(ambiLight);
+
+			var light = new THREE.DirectionalLight();
+			light.position.set(0, 30, 20);
+			scene.add(light);
+
+			// add the output of the renderer to the html element
+			document.getElementById("WebGL-output").appendChild(webGLRenderer.domElement);
+
+			// call the render function
+			var step = 0;
+
+	//        var polyhedron = createMesh(new THREE.PolyhedronGeometry(vertices, faces, controls.radius, controls.detail));
+
+
+
+			render();
+
+			function createMesh(geom) {
+
+				var canvasMap = new THREE.Texture(lcanvas);
+				var mat = new THREE.MeshPhongMaterial();
+				mat.map = canvasMap;
+				var mesh = new THREE.Mesh(geom, mat);
+
+				return mesh;
+			}
+
+			function render() {
+			   
+
+				//cube.rotation.y += 0.01;
+				//cube.rotation.x += 0.01;
+
+				cube.material.map.needsUpdate = true;
+				// render using requestAnimationFrame
+				//requestAnimationFrame(render);
+				webGLRenderer.render(scene, camera);
+			}
+		
+		}
         
     }
 );

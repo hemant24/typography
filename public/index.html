@@ -12,10 +12,16 @@
 		font-size : 12px;
 	}
 	/* remove padding and scrolling from elements that contain an Accordion OR a content-div */
-	.ui-layout-center ,	/* has content-div */
+	.ui-layout-center {
+	padding: 0;
+		overflow: hidden;
+	},	/* has content-div */
 	.ui-layout-west ,	/* has Accordion */
-	.ui-layout-east ,	/* has content-div ... */
-	.ui-layout-east .ui-layout-content { /* content-div has Accordion */
+	.ui-layout-east {
+		padding: 0;
+		overflow: scroll;
+	}
+	.ui-layout-content { /* content-div has Accordion */
 		padding: 0;
 		overflow: hidden;
 	}
@@ -160,6 +166,8 @@
 		<p>
 			<a href="#" id="videoLink"> Download </a>
 		</p>
+		<div id="WebGL-output">
+		</div>
 	</div>
 </div>
 
